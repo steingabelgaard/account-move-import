@@ -32,7 +32,8 @@ class AccountMoveImport(models.TransientModel):
         ('extenso', 'In Extenso'),
         ('cielpaye', 'Ciel Paye'),
         ('payfit', 'Payfit'),
-        ], string='File Format', required=True,
+        ('danloen', u'Danløn')
+        ], string='File Format', required=True, default='danloen',
         help="Select the type of file you are importing.")
     post_move = fields.Boolean(
         string='Post Journal Entry',
@@ -59,6 +60,9 @@ class AccountMoveImport(models.TransientModel):
             self.force_move_date_required = False
             self.force_move_line_name_required = False
             self.force_journal_required = False
+        if self.file_format == 'danloen':
+            self.force_journal_required = True
+            self.force_journal_id = self.env['account.journal'].search([('code', '=', 'MISC')])
 
     # PIVOT FORMAT
     # [{
@@ -93,6 +97,8 @@ class AccountMoveImport(models.TransientModel):
             return self.payfit2pivot(filestr)
         elif file_format == 'cielpaye':
             return self.cielpaye2pivot(fileobj)
+        elif file_format == 'danloen':
+            return self.danloen2pivot(fileobj)
         else:
             raise UserError(_("You must select a file format."))
 
@@ -236,6 +242,40 @@ class AccountMoveImport(models.TransientModel):
                 vals['partner'] = {'ref': l['partner']}
             res.append(vals)
         return res
+    
+    def danloen2pivot(self, fileobj):
+        fieldnames = [
+            False, 'date', False, 'account', False, 'amount', 'name', 'period']
+        reader = unicodecsv.DictReader(
+            fileobj,
+            fieldnames=fieldnames,
+            delimiter=';',
+            quoting=False,
+            encoding='utf-8')
+        res = []
+        i = 0
+        for l in reader:
+            if len(l['account']) > 2:
+                i += 1
+                amount = float(l['amount'].replace('.', '').replace(',', '.'))
+                if amount > 0:
+                    debit = amount
+                    credit = 0
+                else:
+                    debit = 0
+                    credit = - amount
+                vals = {
+                    'account': {'code': l['account']},
+                    'name': l['name'] + ' - ' + l['period'],
+                    'credit': credit,
+                    'debit': debit,
+                    'date': datetime.strptime(l['date'], '%Y-%m-%d'),
+                    'line': i,
+                    'ref': u'Løn ' + l['period']
+                }
+                res.append(vals)
+        return res
+
 
     def meilleuregestion2pivot(self, fileobj):
         fieldnames = [
