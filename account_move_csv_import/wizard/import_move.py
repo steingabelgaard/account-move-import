@@ -32,6 +32,7 @@ class AccountMoveImport(models.TransientModel):
         ('quadra', 'Quadra (without analytic)'),
         ('extenso', 'In Extenso'),
         ('payfit', 'Payfit'),
+        ('nav', 'Navision')
         ], string='File Format', required=True,
         help="Select the type of file you are importing.")
     post_move = fields.Boolean(
@@ -90,6 +91,8 @@ class AccountMoveImport(models.TransientModel):
             return self.extenso2pivot(fileobj)
         elif file_format == 'payfit':
             return self.payfit2pivot(filestr)
+        elif file_format == 'nav':
+            return self.navision2pivot(fileobj)
         else:
             raise UserError(_("You must select a file format."))
 
@@ -201,6 +204,50 @@ class AccountMoveImport(models.TransientModel):
                 }
             if l['analytic']:
                 vals['analytic'] = {'code': l['analytic']}
+            res.append(vals)
+        return res
+    
+    def navision2pivot(self, fileobj):
+        fieldnames = [
+            u'Bogforingsdato', 'Bilagsnr.', 'Bilagstype', 'Finanskontonr.', 'Kildenr.', 'Beskrivelse', 'Sagsnr.', u'Bogføringstype', u'Beløb',
+            #'journal', 'account',
+            #'analytic', 'name', 'debit', 'credit',
+            ]
+        reader = unicodecsv.DictReader(
+            fileobj,
+            #fieldnames=fieldnames,
+            delimiter=';',
+            quotechar='"',
+            quoting=unicodecsv.QUOTE_MINIMAL,
+            encoding='utf-8')
+        res = []
+        i = 0
+        for l in reader:
+            logger.info('row: %s', l)
+            i += 1
+            amount = float(l[u'Beløb'].replace('.', '').replace(',', '.'))
+            if amount > 0:
+                debit = amount
+                credit = 0
+            else:
+                debit = 0
+                credit = - amount
+            partner = self.env['res.partner'].search(['|', ('member_number', '=', l['Kildenr.']), ('ref', '=', l['Kildenr.'])])
+            vals = {
+                #'journal': {'code': l['journal']},
+                'account': {'code': l['Finanskontonr.']},
+                'credit': credit,
+                'debit': debit,
+                'date': datetime.strptime(l[u'\ufeffBogf\xf8ringsdato'], '%d-%m-%Y'),
+                'name': l['Beskrivelse'],
+                'line': i,
+                'move_name': l['Bilagsnr.'],
+                'ref': l['Bilagsnr.'],
+                }
+            if partner:
+                vals['partner_id'] = partner.commercial_partner_id.id
+            #if l['analytic']:
+            #    vals['analytic'] = {'code': l['analytic']}
             res.append(vals)
         return res
 
@@ -397,6 +444,7 @@ class AccountMoveImport(models.TransientModel):
             'period_id': period_id,
             'ref': pivot_line.get('ref'),
             'date': pivot_line['date'],
+            'name': pivot_line['move_name'],
             }
         return vals
 
