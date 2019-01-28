@@ -232,7 +232,7 @@ class AccountMoveImport(models.TransientModel):
             else:
                 debit = 0
                 credit = - amount
-            partner = self.env['res.partner'].search(['|', ('member_number', '=', l['Kildenr.']), ('ref', '=', l['Kildenr.'])])
+            partner = self.env['res.partner'].with_context(active_test=False).search(['|', ('member_number', '=', l['Kildenr.']), ('ref', '=', l['Kildenr.'])])
             vals = {
                 #'journal': {'code': l['journal']},
                 'account': {'code': l['Finanskontonr.']},
@@ -246,6 +246,8 @@ class AccountMoveImport(models.TransientModel):
                 }
             if partner:
                 vals['partner_id'] = partner.commercial_partner_id.id
+            else:
+                vals['name'] = '%s (Kilde: %s)' %(l['Beskrivelse'], l['Kildenr.'])
             #if l['analytic']:
             #    vals['analytic'] = {'code': l['analytic']}
             res.append(vals)
