@@ -33,7 +33,7 @@ class AccountMoveImport(models.TransientModel):
         ('extenso', 'In Extenso'),
         ('payfit', 'Payfit'),
         ('nav', 'Navision')
-        ], string='File Format', required=True,
+        ], string='File Format', required=True, default='nav',
         help="Select the type of file you are importing.")
     post_move = fields.Boolean(
         string='Post Journal Entry',
