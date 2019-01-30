@@ -243,7 +243,7 @@ class AccountMoveImport(models.TransientModel):
                 'account': {'code': l['Finanskontonr.']},
                 'credit': credit,
                 'debit': debit,
-                'date': datetime.strptime(l[u'\ufeffBogf\xf8ringsdato'], '%d-%m-%Y'),
+                'date': datetime.strptime(l[u'\ufeffBogf\xf8ringsdato'], '%Y-%m-%d'),
                 'name': l['Beskrivelse'],
                 'line': i,
                 'move_name': l['Bilagsnr.'],
