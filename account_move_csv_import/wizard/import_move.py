@@ -222,9 +222,13 @@ class AccountMoveImport(models.TransientModel):
             encoding='utf-8')
         res = []
         i = 0
+        date_field = u'\ufeffBogf\xf8ringsdato'
         for l in reader:
             logger.info('row: %s', l)
             i += 1
+            if i == 1:
+                if u'Bogføringsdato' in l.keys():
+                        date_field = u'Bogføringsdato'
             amount = float(l[u'Beløb'].replace('.', '').replace(',', '.'))
             if amount > 0:
                 debit = amount
@@ -243,7 +247,7 @@ class AccountMoveImport(models.TransientModel):
                 'account': {'code': l['Finanskontonr.']},
                 'credit': credit,
                 'debit': debit,
-                'date': datetime.strptime(l[u'\ufeffBogf\xf8ringsdato'], '%Y-%m-%d'),
+                'date': datetime.strptime(l[date_field], '%Y-%m-%d'),
                 'name': l['Beskrivelse'],
                 'line': i,
                 'move_name': l['Bilagsnr.'],
