@@ -33,7 +33,7 @@ class AccountMoveImport(models.TransientModel):
         ('extenso', 'In Extenso'),
         ('payfit', 'Payfit'),
         ('nav', 'Navision')
-        ], string='File Format', required=True,
+        ], string='File Format', required=True, default='nav',
         help="Select the type of file you are importing.")
     post_move = fields.Boolean(
         string='Post Journal Entry',
@@ -222,9 +222,13 @@ class AccountMoveImport(models.TransientModel):
             encoding='utf-8')
         res = []
         i = 0
+        date_field = u'\ufeffBogf\xf8ringsdato'
         for l in reader:
             logger.info('row: %s', l)
             i += 1
+            if i == 1:
+                if u'Bogføringsdato' in l.keys():
+                        date_field = u'Bogføringsdato'
             amount = float(l[u'Beløb'].replace('.', '').replace(',', '.'))
             if amount > 0:
                 debit = amount
@@ -233,12 +237,17 @@ class AccountMoveImport(models.TransientModel):
                 debit = 0
                 credit = - amount
             partner = self.env['res.partner'].with_context(active_test=False).search(['|', ('member_number', '=', l['Kildenr.']), ('ref', '=', l['Kildenr.'])])
+            if not partner:
+                org = self.env['member.organization'].with_context(active_test=False).search([('organization_code', '=', l['Kildenr.'])])
+                if org:
+                    partner = org.partner_id
+                
             vals = {
                 #'journal': {'code': l['journal']},
                 'account': {'code': l['Finanskontonr.']},
                 'credit': credit,
                 'debit': debit,
-                'date': datetime.strptime(l[u'\ufeffBogf\xf8ringsdato'], '%d-%m-%Y'),
+                'date': datetime.strptime(l[date_field], '%Y-%m-%d'),
                 'name': l['Beskrivelse'],
                 'line': i,
                 'move_name': l['Bilagsnr.'],

@@ -36,7 +36,7 @@ This module has been written by Alexis de Lattre from Akretion (alexis.delattre@
         'account_accountant',
         'base_business_document_import',
         ],
-    'external_dependencies': {'python': ['unicodecsv', 'xlrd']},
+    'external_dependencies': {'python': ['unicodecsv']},
     'data': [
         'wizard/import_move_view.xml',
     ],
