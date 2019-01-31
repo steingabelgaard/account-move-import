@@ -411,8 +411,8 @@ class AccountMoveImport(models.TransientModel):
             if (
                     cur_ref == ref and
                     cur_journal_id == l['journal_id'] and
-                    cur_date == l['date'] and
-                    not float_is_zero(cur_balance, precision_rounding=prec)):
+                    cur_date == l['date']):
+                #not float_is_zero(cur_balance, precision_rounding=prec)):
                 # append to current move
                 cur_move['line_id'].append((0, 0, self._prepare_move_line(l)))
             else:
