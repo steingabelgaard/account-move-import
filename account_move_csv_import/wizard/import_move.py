@@ -255,7 +255,7 @@ class AccountMoveImport(models.TransientModel):
                 }
             if partner:
                 vals['partner_id'] = partner.commercial_partner_id.id
-            else:
+            elif l['Kildenr.'] > '':
                 vals['name'] = '%s (Kilde: %s)' %(l['Beskrivelse'], l['Kildenr.'])
             #if l['analytic']:
             #    vals['analytic'] = {'code': l['analytic']}
