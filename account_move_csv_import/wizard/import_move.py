@@ -458,7 +458,7 @@ class AccountMoveImport(models.TransientModel):
             
             }
         if 'move_name' in pivot_line:
-            vals['name'] = pivot_line['move_name'],
+            vals['name'] = pivot_line['move_name']
         return vals
 
     def _prepare_move_line(self, pivot_line):
