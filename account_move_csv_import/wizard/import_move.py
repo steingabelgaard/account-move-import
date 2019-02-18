@@ -455,8 +455,10 @@ class AccountMoveImport(models.TransientModel):
             'period_id': period_id,
             'ref': pivot_line.get('ref'),
             'date': pivot_line['date'],
-            'name': pivot_line['move_name'],
+            
             }
+        if 'move_name' in pivot_line:
+            vals['name'] = pivot_line['move_name'],
         return vals
 
     def _prepare_move_line(self, pivot_line):
