@@ -32,7 +32,9 @@ class AccountMoveImport(models.TransientModel):
         ('quadra', 'Quadra (without analytic)'),
         ('extenso', 'In Extenso'),
         ('payfit', 'Payfit'),
-        ('nav', 'Navision')
+        ('nav', 'Navision'),
+        ('danloen', u'Danløn'),
+        ('zenegy', 'Zenegy løn')
         ], string='File Format', required=True, default='nav',
         help="Select the type of file you are importing.")
     post_move = fields.Boolean(
@@ -93,6 +95,10 @@ class AccountMoveImport(models.TransientModel):
             return self.payfit2pivot(filestr)
         elif file_format == 'nav':
             return self.navision2pivot(fileobj)
+        elif file_format == 'danloen':
+            return self.danloen2pivot(fileobj)
+        elif file_format == 'zenegy':
+            return self.zenegy2pivot(fileobj)
         else:
             raise UserError(_("You must select a file format."))
 
@@ -205,6 +211,77 @@ class AccountMoveImport(models.TransientModel):
             if l['analytic']:
                 vals['analytic'] = {'code': l['analytic']}
             res.append(vals)
+        return res
+    
+    def danloen2pivot(self, fileobj):
+        fieldnames = [
+            False, 'date', False, 'account', False, 'amount', 'name', 'period']
+        reader = unicodecsv.DictReader(
+            fileobj,
+            fieldnames=fieldnames,
+            delimiter=';',
+            quoting=False,
+            encoding='utf-8')
+        res = []
+        i = 0
+        for l in reader:
+            if len(l['account']) > 2:
+                i += 1
+                amount = float(l['amount'].replace('.', '').replace(',', '.'))
+                if amount > 0:
+                    debit = amount
+                    credit = 0
+                else:
+                    debit = 0
+                    credit = - amount
+                vals = {
+                    'account': {'code': l['account']},
+                    'name': l['name'] + ' - ' + l['period'],
+                    'credit': credit,
+                    'debit': debit,
+                    'date': datetime.strptime(l['date'], '%Y-%m-%d'),
+                    'line': i,
+                    'ref': u'Løn ' + l['period']
+                }
+                res.append(vals)
+        return res
+    
+    
+    
+    def zenegy2pivot(self, fileobj):
+        #fieldnames = [
+        #    'number', 'date', False, 'account', False, 'amount', 'name', 'period']
+        aa = self.env['account.analytic.account']
+        line1 = fileobj.readline()
+        if not line1.startswith('sep=;'):
+            raise UserError(_("This is not a Zenergy Payroll file."))
+        reader = unicodecsv.DictReader(
+            fileobj,
+            delimiter=';',
+            quoting=False,
+            encoding='iso-8859-1')
+        res = []
+        i = 0
+        for l in reader:
+            i += 1
+            if l[u'Lønkørsels ID'].isdigit():
+                debit = float(l['Debet'].replace('.', '').replace(',', '.'))
+                credit = float(l['Kredit'].replace('.', '').replace(',', '.'))
+                vals = {
+                    'account': {'code': l['Konto']},
+                    'name': l['Tekst'],
+                    'credit': credit,
+                    'debit': debit,
+                    'date': datetime.strptime(l['Dispositionsdato'], '%d-%m-%Y'),
+                    'line': i,
+                    'ref': u'Løn #%s: %s %s - %s' % (l[u'Lønkørsels ID'], l['Afdelingsnavn'], l['Periode fra'], l['Periode til'])
+                }
+                if l['Afdelingsnavn']:
+                    analytic = aa.search([('name', '=', l['Afdelingsnavn'])])
+                    if analytic:
+                        vals['analytic_account_id'] = analytic.id
+                logger.info('VALS: %s', vals)
+                res.append(vals)
         return res
     
     def navision2pivot(self, fileobj):
@@ -419,10 +496,17 @@ class AccountMoveImport(models.TransientModel):
                 # new move
                 if moves and not float_is_zero(
                         cur_balance, precision_rounding=prec):
-                    raise UserError(_(
-                        "The journal entry that ends on line %d is not "
-                        "balanced (balance is %s).")
-                        % (l['line'] - 1, cur_balance))
+                    if abs(cur_balance) < 0.01:
+                        if cur_balance < 0:
+                            cur_move['line_id'][-1][2]['credit'] += 0.01 #cur_balance
+                        else:
+                            cur_move['line_id'][-1][2]['debit'] += 0.01 #cur_balance
+                        cur_balance = 0
+                    else:
+                        raise UserError(_(
+                            "The journal entry that ends on line %d is not "
+                            "balanced (balance is %s).")
+                            % (l['line'] - 1, cur_balance))
                 if cur_move:
                     assert len(cur_move['line_id']) > 1,\
                         'move should have more than 1 line'
