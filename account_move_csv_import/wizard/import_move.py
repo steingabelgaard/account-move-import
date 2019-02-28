@@ -35,7 +35,7 @@ class AccountMoveImport(models.TransientModel):
         ('nav', 'Navision'),
         ('danloen', u'Danløn'),
         ('zenegy', 'Zenegy løn')
-        ], string='File Format', required=True, default='nav',
+        ], string='File Format', required=True, default='zenergy',
         help="Select the type of file you are importing.")
     post_move = fields.Boolean(
         string='Post Journal Entry',
