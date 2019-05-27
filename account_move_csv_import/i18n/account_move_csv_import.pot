@@ -233,31 +233,31 @@ msgid "Legal account"
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:447
+#: code:addons/account_move_csv_import/wizard/import_move.py:450
 #, python-format
 msgid "Line %d:"
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:470
+#: code:addons/account_move_csv_import/wizard/import_move.py:473
 #, python-format
 msgid "Line %d: bad value for credit (%s)."
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:474
+#: code:addons/account_move_csv_import/wizard/import_move.py:477
 #, python-format
 msgid "Line %d: bad value for debit (%s)."
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:467
+#: code:addons/account_move_csv_import/wizard/import_move.py:470
 #, python-format
 msgid "Line %d: missing date."
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:464
+#: code:addons/account_move_csv_import/wizard/import_move.py:467
 #, python-format
 msgid "Line %d: missing label."
 msgstr ""
@@ -303,19 +303,19 @@ msgid "Text separator"
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:506
+#: code:addons/account_move_csv_import/wizard/import_move.py:509
 #, python-format
 msgid "The journal entry that ends on line %d is not balanced (balance is %s)."
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:523
+#: code:addons/account_move_csv_import/wizard/import_move.py:526
 #, python-format
 msgid "The journal entry that ends on the last line is not balanced (balance is %s)."
 msgstr ""
 
 #. module: account_move_csv_import
-#: code:addons/account_move_csv_import/wizard/import_move.py:257
+#: code:addons/account_move_csv_import/wizard/import_move.py:260
 #, python-format
 msgid "This is not a Zenergy Payroll file."
 msgstr ""
