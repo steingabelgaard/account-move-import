@@ -252,8 +252,11 @@ class AccountMoveImport(models.TransientModel):
         #fieldnames = [
         #    'number', 'date', False, 'account', False, 'amount', 'name', 'period']
         aa = self.env['account.analytic.account']
-        line1 = fileobj.readline()
-        if not line1.startswith('sep=;'):
+        line1 = fileobj.readline().decode('iso-8859-1')
+        logger.info('LOEN: %s', line1) 
+        if line1.startswith(u'Lønkørsels ID;CVR nummer;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
+            fileobj.seek(0)
+        elif not line1.startswith('sep=;'):
             raise UserError(_("This is not a Zenergy Payroll file."))
         reader = unicodecsv.DictReader(
             fileobj,
