@@ -29,6 +29,7 @@ install:
   - export PATH=${HOME}/maintainer-quality-tools/travis:$PATH
   - travis_install_nightly
   - pip install PyPDF2
+  - pip install unicodecsv
 
 script:
   - travis_run_tests
