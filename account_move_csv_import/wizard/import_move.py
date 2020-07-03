@@ -112,6 +112,8 @@ class AccountMoveImport(models.TransientModel):
             return self.cielpaye2pivot(fileobj)
         elif file_format == 'fec_txt':
             return self.fectxt2pivot(fileobj)
+        elif file_format == 'danloen':
+            return self.danloen2pivot(fileobj)
         else:
             raise UserError(_("You must select a file format."))
 
@@ -304,7 +306,7 @@ class AccountMoveImport(models.TransientModel):
             fileobj,
             fieldnames=fieldnames,
             delimiter=';',
-            quoting=False,
+            quoting=unicodecsv.QUOTE_MINIMAL,
             encoding='utf-8')
         res = []
         i = 0
