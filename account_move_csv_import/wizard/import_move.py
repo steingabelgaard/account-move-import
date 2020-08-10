@@ -256,6 +256,8 @@ class AccountMoveImport(models.TransientModel):
         logger.info('LOEN: %s', line1) 
         if line1.startswith(u'Lønkørsels ID;CVR nummer;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
             fileobj.seek(0)
+        elif line1.startswith(u'Lønkørsels ID;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
+            fileobj.seek(0)
         elif not line1.startswith('sep=;'):
             raise UserError(_("This is not a Zenergy Payroll file."))
         reader = unicodecsv.DictReader(
@@ -268,8 +270,16 @@ class AccountMoveImport(models.TransientModel):
         for l in reader:
             i += 1
             if l[u'Lønkørsels ID'].isdigit():
-                debit = float(l['Debet'].replace('.', '').replace(',', '.'))
-                credit = float(l['Kredit'].replace('.', '').replace(',', '.'))
+                debit = 0
+                credit = 0
+                credit2 = 0
+                if l['Debet']:
+                    debit = float(l['Debet'].replace('.', '').replace(',', '.'))
+                if l['Kredit']:
+                    credit = float(l['Kredit'].replace('.', '').replace(',', '.'))
+                if credit and debit:
+                    credit2 = credit
+                    credit = 0
                 vals = {
                     'account': {'code': l['Konto']},
                     'name': l['Tekst'],
@@ -285,6 +295,11 @@ class AccountMoveImport(models.TransientModel):
                         vals['analytic_account_id'] = analytic.id
                 logger.info('VALS: %s', vals)
                 res.append(vals)
+                if credit2:
+                    vals2 = vals.copy()
+                    vals2['debit'] = 0
+                    vals2['credit'] = credit2
+                    res.append(vals2)
         return res
     
     def navision2pivot(self, fileobj):
