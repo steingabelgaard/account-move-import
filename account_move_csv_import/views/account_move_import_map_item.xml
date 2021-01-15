@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 Stein & Gabelgaard ApS
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+
+    <record model="ir.ui.view" id="account_move_import_map_item_form_view">
+        <field name="name">account.move.import.map.item.form (in account_move_csv_import)</field>
+        <field name="model">account.move.import.map.item</field>
+        <field name="arch" type="xml">
+       		<form>
+            	<field name="map_id"/>
+            	<field name="name"/>
+            	<field name="account_id"/>
+            	<field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="account_move_import_map_item_search_view">
+        <field name="name">account.move.import.map.item.search (in account_move_csv_import)</field>
+        <field name="model">account.move.import.map.item</field>
+        <field name="arch" type="xml">
+        	<search>
+            	<field name="map_id"/>
+            	<field name="name"/>
+            	<field name="account_id"/>
+            	<field name="company_id" groups="base.group_multi_company" />
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="account_move_import_map_item_tree_view">
+        <field name="name">account.move.import.map.item.tree (in account_move_csv_import)</field>
+        <field name="model">account.move.import.map.item</field>
+        <field name="arch" type="xml">
+            <tree>
+            	<field name="map_id"/>
+            	<field name="name"/>
+            	<field name="account_id"/>
+            	<field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="account_move_import_map_item_act_window">
+        <field name="name">Account Move Import Map Item</field> <!-- TODO -->
+        <field name="res_model">account.move.import.map.item</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record model="ir.ui.menu" id="account_move_import_map_item_menu">
+        <field name="name">Account Move Import Map Item</field>
+        <field name="parent_id" ref="account_move_import_conf_menu"/> <!-- TODO -->
+        <field name="action" ref="account_move_import_map_item_act_window"/>
+        <field name="sequence" eval="32"/> <!-- TODO -->
+    </record>
+
+</odoo>
