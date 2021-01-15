@@ -43,6 +43,12 @@ This module has been written by Alexis de Lattre from Akretion (alexis.delattre@
         ],
     'external_dependencies': {'python': ['unicodecsv', 'xlrd']},
     'data': [
+        'security/account_move_import_col_map.xml',
+        'views/account_move_import_col_map.xml',
+        'security/account_move_import_map_item.xml',
+        'views/account_move_import_map_item.xml',
+        'security/account_move_import_map.xml',
+        'views/account_move_import_map.xml',
         'wizard/import_move_view.xml',
     ],
     'installable': True,

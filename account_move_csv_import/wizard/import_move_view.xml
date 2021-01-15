@@ -19,6 +19,8 @@
                 <field name="file_format" />
                 <field name="file_encoding" attrs="{'invisible': [('file_format', 'not in', ('fec_txt', 'quadra'))], 'required': [('file_format', 'in', ('fec_txt', 'quadra'))]}"/>
                 <field name="fec_txt_field_separator" attrs="{'invisible': [('file_format', '!=', 'fec_txt')], 'required': [('file_format', '=', 'fec_txt')]}"/>
+                <field name="account_map_id" />
+                <field name="col_map_id" attrs="{'invisible': [('file_format', '!=', 'c5')], 'required': [('file_format', '=', 'c5')]}"/>
                 <field name="post_move" />
                 <field name="force_journal_id" attrs="{'required': [('force_journal_required', '=', True)]}"/>
                 <field name="force_move_date" attrs="{'required': [('force_move_date_required', '=', True)]}"/>
@@ -27,6 +29,7 @@
                 <field name="force_journal_required" invisible="1"/>
                 <field name="force_move_date_required" invisible="1"/>
                 <field name="force_move_line_name_required" invisible="1"/>
+                
             </group>
             <div name="info-csv">
                 <h2>Information about the Generic CSV format</h2>

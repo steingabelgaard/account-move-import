@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 Stein & Gabelgaard ApS
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+
+    <record model="ir.ui.view" id="account_move_import_col_map_form_view">
+        <field name="name">account.move.import.col.map.form (in account_move_csv_import)</field>
+        <field name="model">account.move.import.col.map</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- TODO -->
+                </header>
+                <sheet>
+                    <!-- TODO -->
+                    <group>
+                        <field name="name"/>
+                        <field name="has_header"/>
+                        <field name="skip_lines"/>
+                        <field name="date_fld"/>
+                        <field name="date_format"/>
+                        <field name="account_fld"/>
+                        <field name="voucher_fld"/>
+                        <field name="text_fld"/>
+                        <field name="amount_fld"/>
+                        <field name="debit_fld"/>
+                        <field name="credit_fld"/>
+                        
+                    </group>
+                </sheet>
+                <div class="oe_chatter"></div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="account_move_import_col_map_search_view">
+        <field name="name">account.move.import.col.map.search (in account_move_csv_import)</field>
+        <field name="model">account.move.import.col.map</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="account_move_import_col_map_tree_view">
+        <field name="name">account.move.import.col.map.tree (in account_move_csv_import)</field>
+        <field name="model">account.move.import.col.map</field>
+        <field name="arch" type="xml">
+            <tree>
+                <!-- TODO -->
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="account_move_import_col_map_act_window">
+        <field name="name">Account Move Import Col Map</field> <!-- TODO -->
+        <field name="res_model">account.move.import.col.map</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+    
+    <menuitem
+        id="account_move_import_conf_menu"
+        parent="account.menu_finance_configuration"
+        name="Import Configuration"
+        sequence="100"
+    />
+
+    <record model="ir.ui.menu" id="account_move_import_col_map_menu">
+        <field name="name">Account Move Import Col Map</field>
+        <field name="parent_id" ref="account_move_import_conf_menu"/>
+        <field name="action" ref="account_move_import_col_map_act_window"/>
+        <field name="sequence" eval="16"/>
+    </record>
+
+</odoo>

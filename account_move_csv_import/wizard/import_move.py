@@ -34,7 +34,8 @@ class AccountMoveImport(models.TransientModel):
         ('cielpaye', 'Ciel Paye'),
         ('payfit', 'Payfit'),
         ('fec_txt', 'FEC (text)'),
-        ('danloen', u'Danløn')
+        ('danloen', u'Danløn'),
+        ('c5', 'C5')
         ], string='File Format', required=True, default='danloen',
         help="Select the type of file you are importing.")
     post_move = fields.Boolean(
@@ -60,6 +61,8 @@ class AccountMoveImport(models.TransientModel):
     force_move_date_required = fields.Boolean('Force Date Required')
     force_move_line_name_required = fields.Boolean('Force Label Required')
     force_journal_required = fields.Boolean('Force Journal Required')
+    account_map_id = fields.Many2one('account.move.import.map', 'Account Mapping')
+    col_map_id = fields.Many2one('account.move.import.col.map', 'Column Mapping')
 
     @api.onchange('file_format')
     def file_format_change(self):
@@ -114,6 +117,8 @@ class AccountMoveImport(models.TransientModel):
             return self.fectxt2pivot(fileobj)
         elif file_format == 'danloen':
             return self.danloen2pivot(fileobj)
+        elif file_format == 'c5':
+            return self.c52pivot(fileobj)
         else:
             raise UserError(_("You must select a file format."))
 
@@ -424,12 +429,80 @@ class AccountMoveImport(models.TransientModel):
                 vals['analytic'] = {'code': analytic}
             res.append(vals)
         return res
+    
+    
+    def c52pivot(self, fileobj):
+        
+        def get_col(col):
+            return ord(col[0]) - 65
+        
+        def take_voucher(elem):
+            return elem[get_col(self.col_map_id.voucher_fld)]
 
+        org_code = self.env.user.company_id.partner_id.organization_id.organization_code
+        reader = unicodecsv.reader(
+            fileobj,
+            delimiter=self.col_map_id.delimiter,
+            quoting=unicodecsv.QUOTE_MINIMAL,
+            encoding=self.col_map_id.encoding)
+        res = []
+        i = 0
+        lines = []
+        for l in reader:
+            i += 1
+            if i > self.col_map_id.skip_lines:
+                lines.append(l)
+        lines.sort(key=take_voucher)
+        for l in lines:
+        
+            text = l[get_col(self.col_map_id.text_fld)]
+            if (not(text and text.strip())): 
+                continue
+            if self.col_map_id.amount_fld:
+                amount_txt = l[get_col(self.col_map_id.amount_fld)]
+                logger.info('AMOUNT_TXT: [%s]', amount_txt)
+                if (not(amount_txt and amount_txt.strip())):
+                    continue
+                amount = float(amount_txt.replace('.', '').replace(',', '.'))
+                if amount > 0:
+                    debit = amount
+                    credit = 0
+                else:
+                    debit = 0
+                    credit = - amount
+            else:
+                debit = float(l[get_col(self.col_map_id.debit_fld)].replace('.', '').replace(',', '.'))
+                credit = float(l[get_col(self.col_map_id.credit_fld)].replace('.', '').replace(',', '.'))
+                
+            # Partner search
+            partner = False
+            number = [int(s) for s in l[get_col(self.col_map_id.text_fld)].split() if s.isdigit()]
+            if number:
+                member_number = '%s%s' % (org_code, number[0])
+                partner = self.env['res.partner'].with_context(active_test=False).search([('member_number', '=', member_number)])
+                    
+            vals = {
+                'account': {'code': l[get_col(self.col_map_id.account_fld)]},
+                'name': l[get_col(self.col_map_id.text_fld)],
+                'credit': credit,
+                'debit': debit,
+                'date': datetime.strptime(l[get_col(self.col_map_id.date_fld)].replace('PR','01'), self.col_map_id.date_format),
+                'line': i,
+                'ref': l[get_col(self.col_map_id.voucher_fld)]
+            }
+            if partner:
+                vals['partner_id'] = partner.commercial_partner_id.id
+            res.append(vals)
+        return res
+    
     def create_moves_from_pivot(self, pivot, post=False):
         logger.debug('Final pivot: %s', pivot)
         bdio = self.env['business.document.import']
         amo = self.env['account.move']
-        acc_speed_dict = bdio._prepare_account_speed_dict()
+        if self.account_map_id:
+            acc_speed_dict = self.account_map_id._prepare_account_speed_dict()
+        else:
+            acc_speed_dict = bdio._prepare_account_speed_dict()
         aacc_speed_dict = bdio._prepare_analytic_account_speed_dict()
         journal_speed_dict = bdio._prepare_journal_speed_dict()
         chatter_msg = []
