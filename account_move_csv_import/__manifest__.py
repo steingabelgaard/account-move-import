@@ -39,7 +39,7 @@ This module has been written by Alexis de Lattre from Akretion (alexis.delattre@
     'website': 'http://www.akretion.com',
     'depends': [
         'account',
-        #'base_business_document_import',
+        'base_business_document_import',
         ],
     'external_dependencies': {'python': ['unicodecsv', 'xlrd']},
     'data': [
