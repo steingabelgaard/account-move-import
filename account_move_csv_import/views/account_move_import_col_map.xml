@@ -29,7 +29,7 @@
 
                     </group>
                 </sheet>
-                <div class="oe_chatter"></div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -48,17 +48,17 @@
         <field name="name">account.move.import.col.map.tree (in account_move_csv_import)</field>
         <field name="model">account.move.import.col.map</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <!-- TODO -->
                 <field name="name"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record model="ir.actions.act_window" id="account_move_import_col_map_act_window">
         <field name="name">Account Move Import Col Map</field> <!-- TODO -->
         <field name="res_model">account.move.import.col.map</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
