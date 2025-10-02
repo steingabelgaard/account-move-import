@@ -23,6 +23,6 @@ class AccountMoveImportMap(models.Model):
 
     def _prepare_account_speed_dict(self):
         speed_dict = {}
-        for l in self.item_ids:
-            speed_dict[l.name] = l.account_id.id
+        for item in self.item_ids:
+            speed_dict[item.name] = item.account_id.id
         return speed_dict

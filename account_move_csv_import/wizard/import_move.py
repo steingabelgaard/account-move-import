@@ -5,7 +5,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_is_zero
-from datetime import datetime
+from datetime import datetime, date as datelib
 import unicodecsv
 from tempfile import TemporaryFile
 import base64
@@ -178,7 +178,7 @@ class AccountMoveImport(models.TransientModel):
         force_move_date = self.force_move_date
         force_move_ref = self.force_move_ref
         force_move_line_name = self.force_move_line_name
-        force_journal = self.force_journal_id or False
+        force_journal_code = self.force_journal_id and self.force_journal_id.code or False
         for l in pivot:
             if force_move_date:
                 l['date'] = force_move_date
@@ -186,8 +186,8 @@ class AccountMoveImport(models.TransientModel):
                 l['name'] = force_move_line_name
             if force_move_ref:
                 l['ref'] = force_move_ref
-            if force_journal:
-                l['journal'] = {'recordset': force_journal}
+            if force_journal_code:
+                l['journal'] = force_journal_code
             if isinstance(l.get('date'), datetime):
                 l['date'] = fields.Date.to_string(l['date'])
             if not l['credit']:
@@ -586,52 +586,164 @@ class AccountMoveImport(models.TransientModel):
             res.append(vals)
         return res
 
+    def _prepare_partner_speeddict(self, company_id):
+        speeddict = {}
+        partner_sr = self.env['res.partner'].with_context(active_test=False).search_read(
+            [
+                '|',
+                ('company_id', '=', company_id),
+                ('company_id', '=', False),
+                ('ref', '!=', False),
+                ('parent_id', '=', False),
+            ],
+            ['ref'])
+        for l in partner_sr:
+            speeddict[l['ref'].upper()] = l['id']
+        return speeddict
+
+    def _prepare_speeddict(self, company_id):
+        speeddict = {
+            "partner": self._prepare_partner_speeddict(company_id),
+            "journal": {},
+            "account": {},
+            "analytic": {},
+            }
+        acc_sr = self.env['account.account'].with_company(company_id).search_read([
+            ('company_ids', 'in', company_id),
+            ('deprecated', '=', False)], ['code'])
+        for l in acc_sr:
+            speeddict['account'][l['code'].upper()] = l['id']
+        aacc_sr = self.env['account.analytic.account'].search_read(
+            [('company_id', 'in', (company_id, False)), ('code', '!=', False)],
+            ['code'])
+        for l in aacc_sr:
+            speeddict['analytic'][l['code'].upper()] = l['id']
+        journal_sr = self.env['account.journal'].search_read([
+            ('company_id', '=', company_id)], ['code'])
+        for l in journal_sr:
+            speeddict['journal'][l['code'].upper()] = l['id']
+        return speeddict
+
     def create_moves_from_pivot(self, pivot, post=False):
         logger.info('Final pivot: %s', pivot)
-        bdio = self.env['business.document.import']
         amo = self.env['account.move']
+        speeddict = self._prepare_speeddict(self.env.company.id)
+        key2label = {
+            'journal': _('journal codes'),
+            'account': _('account codes'),
+            'partner': _('partner reference'),
+            'analytic': _('analytic codes'),
+            }
+        errors = {'other': []}
+        for key in key2label.keys():
+            errors[key] = {}
         if self.account_map_id:
             acc_speed_dict = self.account_map_id._prepare_account_speed_dict()
         else:
-            acc_speed_dict = bdio._prepare_account_speed_dict()
-        aacc_speed_dict = bdio._prepare_analytic_account_speed_dict()
-        journal_speed_dict = bdio._prepare_journal_speed_dict()
-        chatter_msg = []
+            acc_speed_dict = speeddict['account']
         # MATCH what needs to be matched... + CHECKS
         for l in pivot:
             assert l.get('line') and isinstance(l.get('line'), int),\
                 'missing line number'
-            error_prefix = _('Line %d:') % l['line']
-            bdiop = bdio.with_context(error_prefix=error_prefix)
-            account = bdiop._match_account(
-                l['account'], chatter_msg, acc_speed_dict)
-            l['account_id'] = account.id
+            if l['account']['code'] in acc_speed_dict:
+                l['account_id'] = acc_speed_dict[l['account']['code']]
+            if not l.get('account_id'):
+                # Match when import = 61100000 and Odoo has 611000
+                acc_code_tmp = l['account']
+                while acc_code_tmp and acc_code_tmp[-1] == '0':
+                    acc_code_tmp = acc_code_tmp[:-1]
+                    if acc_code_tmp and acc_code_tmp in acc_speed_dict:
+                        l['account_id'] = acc_speed_dict[acc_code_tmp]
+                        break
+            if not l.get('account_id'):
+                # Match when import = 611000 and Odoo has 611000XX
+                for code, account_id in acc_speed_dict.items():
+                    if code.startswith(l['account']):
+                        logger.warning(
+                            "Approximate match: import account %s has been matched "
+                            "with Odoo account %s" % (l['account'], code))
+                        l['account_id'] = account_id
+                        break
+            if not l.get('account_id'):
+                errors['account'].setdefault(l['account'], []).append(l['line'])
             if l.get('partner'):
-                partner = bdiop._match_partner(
-                    l['partner'], chatter_msg, partner_type=False)
-                l['partner_id'] = partner.commercial_partner_id.id
+                if l['partner'] in speeddict['partner']:
+                    l['partner_id'] = speeddict['partner'][l['partner']]
+                else:
+                    errors['partner'].setdefault(l['partner'], []).append(l['line'])
+            if l.get('partner'):
+                if l['partner'] in speeddict['partner']:
+                    l['partner_id'] = speeddict['partner'][l['partner']]
+                else:
+                    errors['partner'].setdefault(l['partner'], []).append(l['line'])
             if l.get('analytic'):
-                analytic = bdiop._match_analytic_account(
-                    l['analytic'], chatter_msg, aacc_speed_dict)
-                l['analytic_account_id'] = analytic.id
-            journal = bdiop._match_journal(
-                l['journal'], chatter_msg, journal_speed_dict)
-            l['journal_id'] = journal.id
+                l['analytic_distribution'] = {}
+                for ana_entry in l['analytic'].split('|'):
+                    ana_entry = ana_entry.strip()
+                    if ana_entry:
+                        ana_entry_split = ana_entry.split(':')
+                        if len(ana_entry_split) == 1:
+                            ana_account_code = ana_entry_split[0].strip()
+                            ana_pct = 100
+                        elif len(ana_entry_split) > 1:
+                            ana_account_code = ':'.join(ana_entry_split[:-1]).strip()
+                            ana_pct_str = ana_entry_split[-1]
+                            ana_pct_str_ready = ana_pct_str.replace(',', '.')
+                            try:
+                                ana_pct = float(ana_pct_str_ready)
+                            except Exception:
+                                errors['other'].append("Line %d: wrong analytic percentage: '%s' is not a number." % (l['line'], ana_pct_str))
+                                ana_pct = 1
+                            if ana_pct < 0 or ana_pct > 100:
+                                errors['other'].append("Line %d: wrong analytic percentage: '%s' is not between 0 and 100." % (l['line'], ana_pct_str))
+                        if ana_account_code in speeddict['analytic']:
+                            l['analytic_distribution'][speeddict['analytic'][ana_account_code]] = ana_pct
+                        else:
+                            errors['analytic'].setdefault(ana_account_code, []).append(l['line'])
+
+            if l['journal'] in speeddict['journal']:
+                l['journal_id'] = speeddict['journal'][l['journal']]
+            else:
+                errors['journal'].setdefault(l['journal'], []).append(l['line'])
             if not l.get('name'):
-                raise UserError(_(
+                errors['other'].append(_(
                     'Line %d: missing label.') % l['line'])
             if not l.get('date'):
-                raise UserError(_(
+                errors['other'].append(_(
                     'Line %d: missing date.') % l['line'])
-            if not isinstance(l.get('credit'), float):
-                raise UserError(_(
+            else:
+                if not isinstance(l.get('date'), datelib):
+                    try:
+                        l['date'] = datetime.strptime(l['date'], '%Y-%m-%d')
+                    except Exception:
+                        errors['other'].append(_(
+                            'Line %d: bad date format %s') % (l['line'], l['date']))
+            if not isinstance(l.get('credit'), (float, int)):
+                errors['other'].append(_(
                     'Line %d: bad value for credit (%s).')
                     % (l['line'], l['credit']))
-            if not isinstance(l.get('debit'), float):
-                raise UserError(_(
+            if not isinstance(l.get('debit'), (float, int)):
+                errors['other'].append(_(
                     'Line %d: bad value for debit (%s).')
                     % (l['line'], l['debit']))
             # test that they don't have both a value
+
+        # LIST OF ERRORS
+        msg = ''
+        for key, label in key2label.items():
+            if errors[key]:
+                errors_key_sorted = sorted(errors[key].items(), key=lambda x: x[0])
+                msg += _("List of %s that don't exist in Odoo:\n%s\n\n") % (
+                    label,
+                    '\n'.join([
+                        '- %s : line(s) %s' % (code, ', '.join([str(i) for i in lines]))
+                        for (code, lines) in errors_key_sorted]))
+        if errors['other']:
+            msg += _('List of misc errors:\n%s') % (
+                '\n'.join(['- %s' % e for e in errors['other']]))
+        if msg:
+            raise UserError(msg)
+
         # EXTRACT MOVES
         moves = []
         cur_journal_id = False
@@ -701,7 +813,7 @@ class AccountMoveImport(models.TransientModel):
             'name': pivot_line['name'],
             'partner_id': pivot_line.get('partner_id'),
             'account_id': pivot_line['account_id'],
-            'analytic_account_id': pivot_line.get('analytic_account_id'),
+            'analytic_distribution': pivot_line.get('analytic_distribution'),
             'import_reconcile': pivot_line.get('reconcile_ref'),
             }
         return vals
