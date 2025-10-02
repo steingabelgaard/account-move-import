@@ -36,7 +36,7 @@ There are many community modules that handle the import of account moves via CSV
 This module has been written by Alexis de Lattre from Akretion (alexis.delattre@akretion.com).
     """,
     'author': 'Akretion',
-    'website': 'http://www.akretion.com',
+    'website': 'https://www.steingabelgaard.dk',
     'depends': [
         'account',
         'base_business_document_import',

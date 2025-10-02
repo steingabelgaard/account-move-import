@@ -35,7 +35,7 @@ class AccountMoveImport(models.TransientModel):
         ('cielpaye', 'Ciel Paye'),
         ('payfit', 'Payfit'),
         ('fec_txt', 'FEC (text)'),
-        ('danloen', u'Danløn'),
+        ('danloen', 'Danløn'),
         ('c5', 'C5'),
         ('zenegy', 'Zenegy løn'),
         ], string='File Format', required=True, default='danloen',
@@ -375,13 +375,13 @@ class AccountMoveImport(models.TransientModel):
         aa = self.env['account.analytic.account']
         line1 = fileobj.readline().decode('iso-8859-1')
         logger.info('LOEN: %s', line1)
-        if line1.startswith(u'Lønkørsels ID;CVR nummer;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
+        if line1.startswith('Lønkørsels ID;CVR nummer;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
             fileobj.seek(0)
-        elif line1.startswith(u'Lønkørsels ID;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
+        elif line1.startswith('Lønkørsels ID;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
             fileobj.seek(0)
-        elif line1.startswith(u'Lønkørsels-ID;CVR nummer;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
+        elif line1.startswith('Lønkørsels-ID;CVR nummer;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
             fileobj.seek(0)
-        elif line1.startswith(u'Lønkørsels-ID;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
+        elif line1.startswith('Lønkørsels-ID;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
             fileobj.seek(0)
         elif not line1.startswith('sep=;'):
             raise UserError(_("This is not a Zenergy Payroll file."))
@@ -393,10 +393,10 @@ class AccountMoveImport(models.TransientModel):
         i = 0
         for l in reader:
             i += 1
-            if u'Lønkørsels ID' in l:
-                loen_id_key = u'Lønkørsels ID'
+            if 'Lønkørsels ID' in l:
+                loen_id_key = 'Lønkørsels ID'
             else:
-                loen_id_key = u'Lønkørsels-ID'
+                loen_id_key = 'Lønkørsels-ID'
             if l[loen_id_key].isdigit():
                 debit = 0
                 credit = 0
@@ -415,7 +415,7 @@ class AccountMoveImport(models.TransientModel):
                     'debit': debit,
                     'date': datetime.strptime(l['Dispositionsdato'], '%d-%m-%Y'),
                     'line': i,
-                    'ref': u'Løn #%s: %s %s - %s' % (l[loen_id_key], l['Afdelingsnavn'], l['Periode fra'], l['Periode til'])
+                    'ref': 'Løn #%s: %s %s - %s' % (l[loen_id_key], l['Afdelingsnavn'], l['Periode fra'], l['Periode til'])
                 }
                 if l['Afdelingsnavn']:
                     analytic = aa.search([('name', '=', l['Afdelingsnavn'])])
@@ -496,7 +496,7 @@ class AccountMoveImport(models.TransientModel):
         sh1 = wb.sheet_by_index(1)
         i = 0
         res = []
-        name = u'Paye'
+        name = 'Paye'
         for rownum in range(sh1.nrows):
             row = sh1.row_values(rownum)
             i += 1
