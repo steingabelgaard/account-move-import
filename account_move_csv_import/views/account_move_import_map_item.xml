@@ -34,19 +34,19 @@
         <field name="name">account.move.import.map.item.tree (in account_move_csv_import)</field>
         <field name="model">account.move.import.map.item</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
             	<field name="map_id"/>
             	<field name="name"/>
             	<field name="account_id"/>
             	<field name="company_id" groups="base.group_multi_company" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record model="ir.actions.act_window" id="account_move_import_map_item_act_window">
         <field name="name">Account Move Import Map Item</field> <!-- TODO -->
         <field name="res_model">account.move.import.map.item</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>

@@ -151,12 +151,12 @@ class AccountMoveImport(models.TransientModel):
 
         if len(moves) == 1:
             action.update({
-                'view_mode': 'form,tree',
+                'view_mode': 'form,list',
                 'res_id': moves[0].id,
                 })
         else:
             action.update({
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
                 'domain': [('id', 'in', moves.ids)],
                 })
         return action
