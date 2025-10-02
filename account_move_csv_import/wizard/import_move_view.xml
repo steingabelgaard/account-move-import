@@ -1,11 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!--
-  © 2012-2017 Akretion (http://www.akretion.com/)
-  @author: Alexis de Lattre <alexis.delattre@akretion.com>
-  License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
--->
-
+<?xml version='1.0' encoding='utf-8'?>
 <odoo>
 
 <record id="account_move_import_form" model="ir.ui.view">
@@ -16,16 +9,16 @@
             <group name="main">
                 <field name="file_to_import" filename="filename"/>
                 <field name="filename" invisible="1"/>
-                <field name="file_format" />
-                <field name="file_encoding" attrs="{'invisible': [('file_format', 'not in', ('fec_txt', 'quadra'))], 'required': [('file_format', 'in', ('fec_txt', 'quadra'))]}"/>
-                <field name="fec_txt_field_separator" attrs="{'invisible': [('file_format', '!=', 'fec_txt')], 'required': [('file_format', '=', 'fec_txt')]}"/>
-                <field name="account_map_id" />
-                <field name="col_map_id" attrs="{'invisible': [('file_format', '!=', 'c5')], 'required': [('file_format', '=', 'c5')]}"/>
-                <field name="post_move" />
-                <field name="force_journal_id" attrs="{'required': [('force_journal_required', '=', True)]}"/>
-                <field name="force_move_date" attrs="{'required': [('force_move_date_required', '=', True)]}"/>
-                <field name="force_move_ref" />
-                <field name="force_move_line_name" attrs="{'required': [('force_move_line_name_required', '=', True)]}"/>
+                <field name="file_format"/>
+                <field name="file_encoding" invisible="file_format not in ('fec_txt', 'quadra')" required="file_format in ('fec_txt', 'quadra')"/>
+                <field name="fec_txt_field_separator" invisible="file_format != 'fec_txt'" required="file_format == 'fec_txt'"/>
+                <field name="account_map_id"/>
+                <field name="col_map_id" invisible="file_format != 'c5'" required="file_format == 'c5'"/>
+                <field name="post_move"/>
+                <field name="force_journal_id" required="force_journal_required"/>
+                <field name="force_move_date" required="force_move_date_required"/>
+                <field name="force_move_ref"/>
+                <field name="force_move_line_name" required="force_move_line_name_required"/>
                 <field name="force_journal_required" invisible="1"/>
                 <field name="force_move_date_required" invisible="1"/>
                 <field name="force_move_line_name_required" invisible="1"/>
@@ -47,14 +40,14 @@
                         </ol></li>
                     <li><em>Encoding</em>: UTF-8</li>
                     <li><em>Field separator</em>: , (coma)</li>
-                    <li><em>Text separator</em>: &quot; (quote)</li>
+                    <li><em>Text separator</em>: " (quote)</li>
                     <li><em>Decimal separator</em>: . (dot)</li>
                     </ul>
                     <p>If exporting from LibreOffice, set Language to
                         English on numeric cells.</p>
             </div>
             <footer>
-                <button name="run_import" type="object" string="Run Import" class="oe_highlight" />
+                <button name="run_import" type="object" string="Run Import" class="oe_highlight"/>
                 <button special="cancel" string="Cancel" class="oe_link"/>
             </footer>
         </form>
@@ -68,9 +61,6 @@
     <field name="target">new</field>
 </record>
 
-<menuitem id="account_move_import_menu"
-        parent="account.menu_finance_entries"
-        action="account_move_import_action"
-        sequence="150" />
+<menuitem id="account_move_import_menu" parent="account.menu_finance_entries" action="account_move_import_action" sequence="150"/>
 
 </odoo>
