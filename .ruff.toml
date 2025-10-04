@@ -31,6 +31,7 @@ quote-style = "preserve"
 [lint.per-file-ignores]
 "__init__.py" = ["F401", "I001"]  # ignore unused and unsorted imports in __init__.py
 "__manifest__.py" = ["B018"]  # useless expression
+"import_move.py" = ["E741", "F821", "UP038"]
 
 [lint.isort]
 section-order = ["future", "standard-library", "third-party", "odoo", "odoo-addons", "first-party", "local-folder"]
