@@ -59,6 +59,8 @@ Added by Stein & Gabelgaard ApS
         'views/account_move_import_map.xml',
         'wizard/import_move_view.xml',
         'security/import_move_wizard.xml',
+        'security/zenegy_analytic_map.xml',
+        'views/zenegy_analytic_map.xml',
     ],
     'installable': True,
 }
