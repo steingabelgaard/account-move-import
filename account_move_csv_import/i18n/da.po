@@ -6,448 +6,548 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-05 09:50+0000\n"
-"Last-Translator: Hans Henrik Gabelgaard <hhg@gabelgaard.org>\n"
-"Language-Team: Danish <http://weblate.steingabelgaard.dk/projects/account-"
-"move-import-15-0/account-move-import-15-0-account_move_csv_import/da/>\n"
+"PO-Revision-Date: 2021-04-06 17:07+0000\n"
+"Last-Translator: Jonathan Stein <js@steingabelgaard.dk>\n"
+"Language-Team: Danish <http://weblate.steingabelgaard.dk/projects/"
+"account-move-import-12-0/account-move-import-12-0-account_move_csv_import/da/"
+">\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "<em>Columns</em>:"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "<em>Decimal separator</em>: . (dot)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "<em>Encoding</em>: UTF-8"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "<em>Field separator</em>: , (coma)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "<em>Text separator</em>: \" (quote)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_encoding:0
 msgid "ASCII"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__account_map_id
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__map_id
 msgid "Account Mapping"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.actions.act_window,name:account_move_csv_import.account_move_import_col_map_act_window
+#: model:ir.model,name:account_move_csv_import.model_account_move_import_col_map
+#: model:ir.ui.menu,name:account_move_csv_import.account_move_import_col_map_menu
 msgid "Account Move Import Col Map"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.actions.act_window,name:account_move_csv_import.account_move_import_map_act_window
+#: model:ir.model,name:account_move_csv_import.model_account_move_import_map
+#: model:ir.ui.menu,name:account_move_csv_import.account_move_import_map_menu
 msgid "Account Move Import Map"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.actions.act_window,name:account_move_csv_import.account_move_import_map_item_act_window
+#: model:ir.model,name:account_move_csv_import.model_account_move_import_map_item
+#: model:ir.ui.menu,name:account_move_csv_import.account_move_import_map_item_menu
 msgid "Account Move Import Map Item"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__account_fld
 msgid "Account field"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import_col_map__account_fld
 msgid "Account field header or Column ('A' to 'Z')"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__item_ids
 msgid "Account mappings"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__amount_fld
 msgid "Amount field"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import_col_map__amount_fld
 msgid "Amount field header or Column ('A' to 'Z') - with sign"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Analytic account"
 msgstr "Dimension"
 
 #. module: account_move_csv_import
-msgid "Analytic tags"
-msgstr "Analyse tags"
-
-#. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "C5"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Cancel"
 msgstr "Annullér"
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "Ciel Paye"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__col_map_id
 msgid "Column Mapping"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__company_id
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__company_id
 msgid "Company"
 msgstr "Virksomhed"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__create_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__create_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__create_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__create_uid
 msgid "Created by"
 msgstr "Oprettet af"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__create_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__create_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__create_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__create_date
 msgid "Created on"
 msgstr "Oprettet den"
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Credit"
 msgstr "Kredit"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__credit_fld
 msgid "Credit field"
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "Danløn"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Date (DD/MM/YYYY)"
 msgstr "Dato (DD/MM/YYYY)"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__date_fld
 msgid "Date field"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import_col_map__date_fld
 msgid "Date field header or Column ('A' to 'Z')"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__date_format
 msgid "Date format"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Debit"
 msgstr "Debit"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__debit_fld
 msgid "Debit field"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import_col_map__credit_fld
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import_col_map__debit_fld
 msgid "Debit field header or Column ('A' to 'Z')"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__delimiter
 msgid "Delimiter"
 msgstr ""
 
 #. module: account_move_csv_import
-msgid "Department Name"
-msgstr "Afdeling"
-
-#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__account_id
 msgid "Destination Account"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__display_name
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__display_name
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__display_name
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__display_name
 msgid "Display Name"
 msgstr "Vis navn"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__encoding
 msgid "Encoding"
 msgstr "Tegnsæt"
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "FEC (text)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__fec_txt_field_separator
 msgid "Field Separator"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__file_encoding
 msgid "File Encoding"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__file_format
 msgid "File Format"
 msgstr "Fil format"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import__file_to_import
 msgid "File containing the journal entry(ies) to import."
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__file_to_import
 msgid "File to Import"
 msgstr "Import fil"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__filename
 msgid "Filename"
 msgstr "Filnavn"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__force_move_date
 msgid "Force Date"
 msgstr "Forcer dato"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__force_move_date_required
 msgid "Force Date Required"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__force_journal_id
 msgid "Force Journal"
 msgstr "Forcer journal"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__force_journal_required
 msgid "Force Journal Required"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__force_move_line_name
 msgid "Force Label"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__force_move_line_name_required
 msgid "Force Label Required"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__force_move_ref
 msgid "Force Reference"
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "Generic CSV"
 msgstr "Generisk CSV"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__id
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__id
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__id
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__id
 msgid "ID"
 msgstr "ID"
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_encoding:0
 msgid "ISO 8859-15 (alias Latin1)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import__post_move
 msgid "If True, the journal entry will be posted after the import."
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid ""
 "If exporting from LibreOffice, set Language to\n"
 "                        English on numeric cells."
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.actions.act_window,name:account_move_csv_import.account_move_import_action
+#: model:ir.ui.menu,name:account_move_csv_import.account_move_import_menu
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Import Account Move"
 msgstr "Importer posteringer"
 
 #. module: account_move_csv_import
+#: model:ir.ui.menu,name:account_move_csv_import.account_move_import_conf_menu
 msgid "Import Configuration"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_line__import_reconcile
 msgid "Import Reconcile Ref"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model,name:account_move_csv_import.model_account_move_import
 msgid "Import account move from CSV file"
 msgstr "Importer posteringer fra CSV fil"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__has_header
 msgid "Import file has header in first line"
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:138
 #, python-format
 msgid "Imported Journal Entries"
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "In Extenso"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Information about the Generic CSV format"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model,name:account_move_csv_import.model_account_move_line
 msgid "Journal Item"
 msgstr "Journalpost"
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Journal code"
 msgstr "Journal kode"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import__force_journal_id
 msgid ""
 "Journal in which the journal entry will be created, even if the file "
 "indicate another journal."
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Label"
 msgstr "Etiket"
 
 #. module: account_move_csv_import
-msgid "Label prefix"
-msgstr ""
-
-#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import____last_update
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map____last_update
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map____last_update
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item____last_update
 msgid "Last Modified on"
 msgstr "Senest ændret den"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__write_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__write_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__write_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__write_uid
 msgid "Last Updated by"
 msgstr "Senest opdateret af"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__write_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__write_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__write_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__write_date
 msgid "Last Updated on"
 msgstr "Senest opdateret den"
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Legal account"
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:513
 #, python-format
 msgid "Line %d:"
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:536
 #, python-format
 msgid "Line %d: bad value for credit (%s)."
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:540
 #, python-format
 msgid "Line %d: bad value for debit (%s)."
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:533
 #, python-format
 msgid "Line %d: missing date."
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:530
 #, python-format
 msgid "Line %d: missing label."
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "MeilleureGestion (Prisme)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__name
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__name
 msgid "Name"
 msgstr "Navn"
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Partner internal reference"
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "Payfit"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import__post_move
 msgid "Post Journal Entry"
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,file_format:0
 msgid "Quadra (without analytic)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Run Import"
 msgstr "Kør import"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import__file_format
 msgid "Select the type of file you are importing."
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__skip_lines
 msgid "Skip top lines"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__name
 msgid "Source Account"
 msgstr ""
 
 #. module: account_move_csv_import
+#: selection:account.move.import,fec_txt_field_separator:0
 msgid "Tabulation"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__text_fld
 msgid "Text field"
 msgstr "Tekstfelt"
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:565
 #, python-format
-msgid ""
-"The journal entry that ends on line %d (voucher %s)is not balanced (balance "
-"is %s)."
+msgid "The journal entry that ends on line %d is not balanced (balance is %s)."
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:582
 #, python-format
 msgid ""
 "The journal entry that ends on the last line is not balanced (balance is %s)."
 msgstr ""
 
 #. module: account_move_csv_import
-#, python-format
-msgid "This is not a Zenegy Payroll file."
-msgstr ""
-
-#. module: account_move_csv_import
+#: selection:account.move.import,file_encoding:0
 msgid "UTF-8"
 msgstr "UTF-8"
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__voucher_fld
 msgid "Voucher field"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import_col_map__text_fld
+#: model:ir.model.fields,help:account_move_csv_import.field_account_move_import_col_map__voucher_fld
 msgid "Voucher field header or Column ('A' to 'Z')"
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:245
 #, python-format
 msgid "You must select a field separator."
 msgstr ""
 
 #. module: account_move_csv_import
+#: code:addons/account_move_csv_import/wizard/import_move.py:123
 #, python-format
 msgid "You must select a file format."
 msgstr ""
 
 #. module: account_move_csv_import
-msgid "Zenegy Analytic Map"
-msgstr "Zenegy afdelings import"
-
-#. module: account_move_csv_import
-msgid "Zenegy løn"
-msgstr ""
-
-#. module: account_move_csv_import
-#, python-format
-msgid "move should have more than 1 line (%s) %d"
-msgstr ""
-
-#. module: account_move_csv_import
+#: selection:account.move.import,fec_txt_field_separator:0
 msgid "| (pipe)"
 msgstr ""
