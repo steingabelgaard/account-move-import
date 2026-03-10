@@ -837,6 +837,8 @@ class AccountMoveImport(models.TransientModel):
             'analytic_distribution': pivot_line.get('analytic_distribution'),
             'import_reconcile': pivot_line.get('reconcile_ref'),
             }
+        if pivot_line.get('analytic_tag_ids'):
+            vals['analytic_tag_ids'] = pivot_line.get('analytic_tag_ids')
         return vals
 
     def reconcile_move_lines(self, moves):
