@@ -207,6 +207,11 @@ msgid "Delimiter"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__code
+msgid "Department Code"
+msgstr ""
+
+#. module: account_move_csv_import
 #: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__name
 msgid "Department Name"
 msgstr ""
