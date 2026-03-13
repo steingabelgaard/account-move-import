@@ -419,8 +419,8 @@ class AccountMoveImport(models.TransientModel):
                     'line': i,
                     'ref': u'Løn #%s: %s %s - %s' % (l[loen_id_key], l['Afdelingsnavn'], l['Periode fra'], l['Periode til'])
                 }
-                if l['Afdelingsnavn']:
-                    zenegy_map = self.env['zenegy.analytic.map'].search([('name', '=', l['Afdelingsnavn'])], limit=1)
+                if l['Afdelingsnr.'] and l['Afdelingsnr.'].isdigit() and l['Afdelingsnavn']:
+                    zenegy_map = self.env['zenegy.analytic.map'].search([('code', '=', int(l['Afdelingsnr.']))], limit=1)
                     if zenegy_map:
                         vals['analytic_account_id'] = zenegy_map.analytic_account_id.id
                         if zenegy_map.analytic_tag_ids:
@@ -430,6 +430,7 @@ class AccountMoveImport(models.TransientModel):
                         if analytic:
                             vals['analytic_account_id'] = analytic.id
                         self.env['zenegy.analytic.map'].create({
+                            'code': int(l['Afdelingsnr.']),
                             'name': l['Afdelingsnavn'],
                             'analytic_account_id': analytic.id if analytic else False,
                         })
