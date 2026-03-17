@@ -500,6 +500,26 @@ msgid "Quadra (without analytic)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_from_account_id
+msgid "Repost from account"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_crit_acount_ids
+msgid "Repost sum from accounts"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_text
+msgid "Repost text"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_to_account_id
+msgid "Repost to account"
+msgstr ""
+
+#. module: account_move_csv_import
 #: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Run Import"
 msgstr ""
@@ -527,6 +547,13 @@ msgstr ""
 #. module: account_move_csv_import
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__text_fld
 msgid "Text field"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_zenegy_analytic_map__repost_text
+msgid ""
+"Text to use on the repost move lines. Available variables: {department}, "
+"{periode}"
 msgstr ""
 
 #. module: account_move_csv_import
