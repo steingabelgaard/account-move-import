@@ -12,12 +12,19 @@
                     <!-- TODO -->
                 </header>
                 <sheet>
-                    <!-- TODO -->
                     <group>
-                        <field name="code"/>
-                        <field name="name"/>
-                        <field name="analytic_account_id" options="{'color_field': 'color'}"/>
-                        <field name="analytic_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="analytic_account_id" options="{'color_field': 'color'}"/>
+                            <field name="analytic_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        </group>
+                        <group>
+                            <field name="repost_crit_acount_ids" widget="many2many_tags"/>
+                            <field name="repost_from_account_id"/>
+                            <field name="repost_to_account_id"/>
+                            <field name="repost_text"/>
+                        </group>
                     </group>
                 </sheet>
 
@@ -33,6 +40,7 @@
                 <field name="name"/>
                 <field name="analytic_account_id"/>
                 <field name="analytic_tag_ids"/>
+                <field name="repost_to_account_id"/>
             </search>
         </field>
     </record>
@@ -45,6 +53,7 @@
                 <field name="name"/>
                 <field name="analytic_account_id" options="{'color_field': 'color'}"/>
                 <field name="analytic_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                <field name="repost_to_account_id"/>
             </tree>
         </field>
     </record>

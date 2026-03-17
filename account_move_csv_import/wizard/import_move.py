@@ -12,6 +12,7 @@ from tempfile import TemporaryFile
 import base64
 import zipfile
 import logging
+import babel
 
 logger = logging.getLogger(__name__)
 try:
@@ -191,8 +192,8 @@ class AccountMoveImport(models.TransientModel):
                 l['name'] = force_move_line_name
             if force_move_ref:
                 l['ref'] = force_move_ref
-            if force_journal_code:
-                l['journal'] = force_journal_code
+            if force_journal:
+                l['journal'] = {'recordset': force_journal}
             if isinstance(l.get('date'), datetime):
                 l['date'] = fields.Date.to_string(l['date'])
             if not l['credit']:
@@ -431,6 +432,7 @@ class AccountMoveImport(models.TransientModel):
                 if l['Afdelingsnr.'] and l['Afdelingsnr.'].isdigit() and l['Afdelingsnavn']:
                     zenegy_map = self.env['zenegy.analytic.map'].search([('code', '=', int(l['Afdelingsnr.']))], limit=1)
                     if zenegy_map:
+                        vals['zenegy_analytic_map'] = zenegy_map
                         vals['analytic_account_id'] = zenegy_map.analytic_account_id.id
                         if zenegy_map.analytic_tag_ids:
                             vals['analytic_tag_ids'] = [(6, 0, zenegy_map.analytic_tag_ids.ids)]
@@ -774,6 +776,7 @@ class AccountMoveImport(models.TransientModel):
         cur_balance = 0.0
         prec = self.env.user.company_id.currency_id.rounding
         cur_move = {}
+        cur_zenegy_analytic_map = False
         for l in pivot:
             ref = l.get('ref', False)
             if (
@@ -796,11 +799,47 @@ class AccountMoveImport(models.TransientModel):
                 if cur_move:
                     if not len(cur_move['line_ids']) > 1:
                         raise UserError(_('move should have more than 1 line (%s) %d') % (cur_ref, len(cur_move['line_ids'])))
+                    if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
+                        repost_debit = 0
+                        repost_credit = 0
+                        for line in cur_move['line_ids']:
+                            if line[2]['account_id'] in cur_zenegy_analytic_map.repost_crit_acount_ids.ids:
+                                repost_debit += line[2]['debit']
+                                repost_credit += line[2]['credit']
+                        if repost_debit or repost_credit:
+                            repost_vals = [
+                                {
+                                    'account_id': cur_zenegy_analytic_map.repost_to_account_id.id,
+                                    'debit': repost_debit,
+                                    'credit': repost_credit,
+                                    'name': cur_zenegy_analytic_map.repost_text.format(
+                                        department=cur_zenegy_analytic_map.name,
+                                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
+                                    ),
+                                    'date': cur_date,
+                                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
+                                },
+                                {
+                                    'account_id': cur_zenegy_analytic_map.repost_from_account_id.id,
+                                    'debit': repost_credit,
+                                    'credit': repost_debit,
+                                    'name': cur_zenegy_analytic_map.repost_text.format(
+                                        department=cur_zenegy_analytic_map.name,
+                                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
+                                    ),
+                                    'date': cur_date,
+                                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
+                                }
+                            ]
+                            cur_move['line_ids'].append((0, 0, repost_vals[0]))
+                            cur_move['line_ids'].append((0, 0, repost_vals[1]))
                     moves.append(cur_move)
                 cur_move = self._prepare_move(l)
                 cur_move['line_ids'] = [(0, 0, self._prepare_move_line(l))]
                 cur_date = l['date']
+                logger.info('REF: %s, JOURNAL: %s, DATE: %s - %s', ref, l['journal_id'], cur_date, type(cur_date))
                 cur_ref = ref
+                cur_zenegy_analytic_map = l.get('zenegy_analytic_map', False)
                 cur_journal_id = l['journal_id']
             cur_balance += l['credit'] - l['debit']
         if cur_move:
