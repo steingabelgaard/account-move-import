@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-18 08:50+0000\n"
+"PO-Revision-Date: 2026-03-18 11:50+0000\n"
 "Last-Translator: Hans Henrik Gabelgaard <hhg@gabelgaard.org>\n"
 "Language-Team: Danish <http://weblate.steingabelgaard.dk/projects/account-"
 "move-import-15-0/account-move-import-15-0-account_move_csv_import/da/>\n"
@@ -420,6 +420,7 @@ msgid ""
 "Text to use on the repost move lines. Available variables: {department}, "
 "{periode}"
 msgstr ""
+"Tekst til omposeringslinien. Tilgængelige variabler: {department}, {periode}"
 
 #. module: account_move_csv_import
 #, python-format
