@@ -802,11 +802,16 @@ class AccountMoveImport(models.TransientModel):
                     if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
                         repost_debit = 0
                         repost_credit = 0
+                        repost_amount = 0
                         for line in cur_move['line_ids']:
                             if line[2]['account_id'] in cur_zenegy_analytic_map.repost_crit_acount_ids.ids:
-                                repost_debit += line[2]['debit']
-                                repost_credit += line[2]['credit']
-                        if repost_debit or repost_credit:
+                                repost_amount += line[2]['debit']
+                                repost_amount -= line[2]['credit']
+                        if repost_amount:
+                            if repost_amount > 0:
+                                repost_debit = repost_amount
+                            else:
+                                repost_credit = -repost_amount
                             repost_vals = [
                                 {
                                     'account_id': cur_zenegy_analytic_map.repost_to_account_id.id,
