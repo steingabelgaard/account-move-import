@@ -6,16 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2021-04-06 17:07+0000\n"
-"Last-Translator: Jonathan Stein <js@steingabelgaard.dk>\n"
+"PO-Revision-Date: 2026-03-18 08:50+0000\n"
+"Last-Translator: Hans Henrik Gabelgaard <hhg@gabelgaard.org>\n"
 "Language-Team: Danish <http://weblate.steingabelgaard.dk/projects/account-"
-"move-import-12-0/account-move-import-12-0-account_move_csv_import/da/>\n"
+"move-import-15-0/account-move-import-15-0-account_move_csv_import/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 5.15\n"
 
 #. module: account_move_csv_import
 msgid "<em>Columns</em>:"
@@ -377,19 +377,19 @@ msgstr ""
 
 #. module: account_move_csv_import
 msgid "Repost from account"
-msgstr ""
+msgstr "Ompostering fra"
 
 #. module: account_move_csv_import
 msgid "Repost sum from accounts"
-msgstr ""
+msgstr "Omposter sum fra konti"
 
 #. module: account_move_csv_import
 msgid "Repost text"
-msgstr ""
+msgstr "Omposteringstekst"
 
 #. module: account_move_csv_import
 msgid "Repost to account"
-msgstr ""
+msgstr "Ompostering til"
 
 #. module: account_move_csv_import
 msgid "Run Import"
