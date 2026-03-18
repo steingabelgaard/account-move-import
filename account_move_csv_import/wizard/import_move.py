@@ -850,6 +850,9 @@ class AccountMoveImport(models.TransientModel):
                 "balanced (balance is %s).") % cur_balance)
         rmoves = self.env['account.move']
         for move in moves:
+            logger.info('Creating move: %s', move['ref'])
+            for line in move['line_ids']:
+                logger.info('    with line: %s (%s, %s)', line[2]['name'], line[2]['debit'], line[2]['credit'])
             rmoves += amo.create(move)
         logger.info(
             'Account moves IDs %s created via file import' % rmoves.ids)
