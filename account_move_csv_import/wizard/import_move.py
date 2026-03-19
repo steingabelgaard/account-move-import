@@ -610,6 +610,7 @@ class AccountMoveImport(models.TransientModel):
             res.append(vals)
         return res
 
+
     def _prepare_partner_speeddict(self, company_id):
         speeddict = {}
         partner_sr = self.env['res.partner'].with_context(active_test=False).search_read(
@@ -647,6 +648,46 @@ class AccountMoveImport(models.TransientModel):
         for l in journal_sr:
             speeddict['journal'][l['code'].upper()] = l['id']
         return speeddict
+
+    def _add_reposting_move(self, cur_move, cur_zenegy_analytic_map, cur_date):
+        repost_debit = 0
+        repost_credit = 0
+        repost_amount = 0
+        for line in cur_move['line_ids']:
+            if line[2]['account_id'] in cur_zenegy_analytic_map.repost_crit_acount_ids.ids:
+                repost_amount += line[2]['debit']
+                repost_amount -= line[2]['credit']
+        if repost_amount:
+            if repost_amount > 0:
+                repost_debit = repost_amount
+            else:
+                repost_credit = -repost_amount
+            repost_vals = [
+                {
+                    'account_id': cur_zenegy_analytic_map.repost_to_account_id.id,
+                    'debit': repost_debit,
+                    'credit': repost_credit,
+                    'name': cur_zenegy_analytic_map.repost_text.format(
+                        department=cur_zenegy_analytic_map.name,
+                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
+                    ),
+                    'date': cur_date,
+                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
+                },
+                {
+                    'account_id': cur_zenegy_analytic_map.repost_from_account_id.id,
+                    'debit': repost_credit,
+                    'credit': repost_debit,
+                    'name': cur_zenegy_analytic_map.repost_text.format(
+                        department=cur_zenegy_analytic_map.name,
+                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
+                    ),
+                    'date': cur_date,
+                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
+                }
+            ]
+            cur_move['line_ids'].append((0, 0, repost_vals[0]))
+            cur_move['line_ids'].append((0, 0, repost_vals[1]))
 
     def create_moves_from_pivot(self, pivot, post=False):
         logger.info('Final pivot: %s', pivot)
@@ -800,44 +841,7 @@ class AccountMoveImport(models.TransientModel):
                     if not len(cur_move['line_ids']) > 1:
                         raise UserError(_('move should have more than 1 line (%s) %d') % (cur_ref, len(cur_move['line_ids'])))
                     if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
-                        repost_debit = 0
-                        repost_credit = 0
-                        repost_amount = 0
-                        for line in cur_move['line_ids']:
-                            if line[2]['account_id'] in cur_zenegy_analytic_map.repost_crit_acount_ids.ids:
-                                repost_amount += line[2]['debit']
-                                repost_amount -= line[2]['credit']
-                        if repost_amount:
-                            if repost_amount > 0:
-                                repost_debit = repost_amount
-                            else:
-                                repost_credit = -repost_amount
-                            repost_vals = [
-                                {
-                                    'account_id': cur_zenegy_analytic_map.repost_to_account_id.id,
-                                    'debit': repost_debit,
-                                    'credit': repost_credit,
-                                    'name': cur_zenegy_analytic_map.repost_text.format(
-                                        department=cur_zenegy_analytic_map.name,
-                                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
-                                    ),
-                                    'date': cur_date,
-                                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
-                                },
-                                {
-                                    'account_id': cur_zenegy_analytic_map.repost_from_account_id.id,
-                                    'debit': repost_credit,
-                                    'credit': repost_debit,
-                                    'name': cur_zenegy_analytic_map.repost_text.format(
-                                        department=cur_zenegy_analytic_map.name,
-                                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
-                                    ),
-                                    'date': cur_date,
-                                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
-                                }
-                            ]
-                            cur_move['line_ids'].append((0, 0, repost_vals[0]))
-                            cur_move['line_ids'].append((0, 0, repost_vals[1]))
+                        self._add_reposting_move(cur_move, cur_zenegy_analytic_map, cur_date)
                     moves.append(cur_move)
                 cur_move = self._prepare_move(l)
                 cur_move['line_ids'] = [(0, 0, self._prepare_move_line(l))]
@@ -848,6 +852,8 @@ class AccountMoveImport(models.TransientModel):
                 cur_journal_id = l['journal_id']
             cur_balance += l['credit'] - l['debit']
         if cur_move:
+            if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
+                self._add_reposting_move(cur_move, cur_zenegy_analytic_map, cur_date)
             moves.append(cur_move)
         if not float_is_zero(cur_balance, precision_rounding=prec):
             raise UserError(_(
