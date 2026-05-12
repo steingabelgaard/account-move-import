@@ -2,6 +2,7 @@
 # @author Alexis de Lattre <alexis.delattre@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_is_zero
@@ -131,12 +132,14 @@ class AccountMoveImport(models.TransientModel):
         self.ensure_one()
         fileobj = TemporaryFile('wb+')
         file_bytes = base64.b64decode(self.file_to_import)
+        logger.info('File size: %s bytes: %s', len(file_bytes), file_bytes)
         fileobj.write(file_bytes)
         fileobj.seek(0)  # We must start reading from the beginning !
         pivot = self.file2pivot(fileobj, file_bytes)
         logger.debug('pivot before update: %s', pivot)
         self.update_pivot(pivot)
         moves = self.create_moves_from_pivot(pivot, post=self.post_move)
+        fileobj.seek(0)
         if len(moves) == 1 and zipfile.is_zipfile(fileobj):
             self.archive_zip(moves, fileobj)
         fileobj.close()
@@ -333,21 +336,27 @@ class AccountMoveImport(models.TransientModel):
                     if filename.endswith('_danlonfinans.txt'):
                         res = self._danloen2pivot(myzip.open(filename))
         else:
+            logger.info("Processing file as a simple text file: %s", fileobj)
+            fileobj.seek(0)
             res = self._danloen2pivot(fileobj)
         return res
 
     def _danloen2pivot(self, fileobj):
         fieldnames = [
             False, 'date', False, 'account', False, 'amount', 'name', 'period']
+        #wrapper = io.TextIOWrapper(fileobj, encoding='utf-8')
         reader = unicodecsv.DictReader(
             fileobj,
             fieldnames=fieldnames,
             delimiter=';',
             quoting=unicodecsv.QUOTE_MINIMAL,
-            encoding='utf-8')
+            encoding='utf-8'
+        )
         res = []
         i = 0
+        # logger.info('Processing Reader: %s', reader)
         for l in reader:
+            # logger.info('LINE: %s', l)
             if len(l['account']) > 2:
                 i += 1
                 amount = float(l['amount'].replace('.', '').replace(',', '.'))
