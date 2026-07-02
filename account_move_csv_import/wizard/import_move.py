@@ -434,8 +434,8 @@ class AccountMoveImport(models.TransientModel):
                     if zenegy_map:
                         vals['zenegy_analytic_map'] = zenegy_map
                         vals['analytic_account_id'] = zenegy_map.analytic_account_id.id
-                        if zenegy_map.analytic_tag_ids:
-                            vals['analytic_tag_ids'] = [(6, 0, zenegy_map.analytic_tag_ids.ids)]
+                        # if zenegy_map.analytic_tag_ids:  TODO v19
+                        #    vals['analytic_tag_ids'] = [(6, 0, zenegy_map.analytic_tag_ids.ids)]
                     else:
                         analytic = aa.search([('name', '=', l['Afdelingsnavn'])])
                         if analytic:
@@ -672,7 +672,7 @@ class AccountMoveImport(models.TransientModel):
                         periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
                     ),
                     'date': cur_date,
-                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
+                    # 'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False, TODO v19
                 },
                 {
                     'account_id': cur_zenegy_analytic_map.repost_from_account_id.id,
@@ -683,7 +683,7 @@ class AccountMoveImport(models.TransientModel):
                         periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
                     ),
                     'date': cur_date,
-                    'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False,
+                    # 'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False, TODO v19
                 }
             ]
             cur_move['line_ids'].append((0, 0, repost_vals[0]))
@@ -891,8 +891,8 @@ class AccountMoveImport(models.TransientModel):
             'analytic_distribution': pivot_line.get('analytic_distribution'),
             'import_reconcile': pivot_line.get('reconcile_ref'),
             }
-        if pivot_line.get('analytic_tag_ids'):
-            vals['analytic_tag_ids'] = pivot_line.get('analytic_tag_ids')
+        # if pivot_line.get('analytic_tag_ids'):  TODO v19
+        #     vals['analytic_tag_ids'] = pivot_line.get('analytic_tag_ids')
         return vals
 
     def reconcile_move_lines(self, moves):
