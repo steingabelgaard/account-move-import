@@ -96,6 +96,7 @@ msgid "Amount field header or Column ('A' to 'Z') - with sign"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__analytic_account_id
 #: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Analytic account"
 msgstr ""
@@ -131,6 +132,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__create_uid
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__create_uid
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__create_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__create_uid
 msgid "Created by"
 msgstr ""
 
@@ -139,6 +141,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__create_date
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__create_date
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__create_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__create_date
 msgid "Created on"
 msgstr ""
 
@@ -199,6 +202,16 @@ msgid "Delimiter"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__code
+msgid "Department Code"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__name
+msgid "Department Name"
+msgstr ""
+
+#. module: account_move_csv_import
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__account_id
 msgid "Destination Account"
 msgstr ""
@@ -208,6 +221,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__display_name
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__display_name
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__display_name
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -296,6 +310,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__id
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__id
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__id
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__id
 msgid "ID"
 msgstr ""
 
@@ -391,6 +406,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__write_uid
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__write_uid
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__write_uid
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__write_uid
 msgid "Last Updated by"
 msgstr ""
 
@@ -399,6 +415,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_col_map__write_date
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map__write_date
 #: model:ir.model.fields,field_description:account_move_csv_import.field_account_move_import_map_item__write_date
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -486,6 +503,26 @@ msgid "Quadra (without analytic)"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_from_account_id
+msgid "Repost from account"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_crit_acount_ids
+msgid "Repost sum from accounts"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_text
+msgid "Repost text"
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.model.fields,field_description:account_move_csv_import.field_zenegy_analytic_map__repost_to_account_id
+msgid "Repost to account"
+msgstr ""
+
+#. module: account_move_csv_import
 #: model_terms:ir.ui.view,arch_db:account_move_csv_import.account_move_import_form
 msgid "Run Import"
 msgstr ""
@@ -516,6 +553,13 @@ msgid "Text field"
 msgstr ""
 
 #. module: account_move_csv_import
+#: model:ir.model.fields,help:account_move_csv_import.field_zenegy_analytic_map__repost_text
+msgid ""
+"Text to use on the repost move lines. Available variables: {department}, "
+"{periode}"
+msgstr ""
+
+#. module: account_move_csv_import
 #. odoo-python
 #: code:addons/account_move_csv_import/wizard/import_move.py:0
 msgid ""
@@ -534,7 +578,7 @@ msgstr ""
 #. module: account_move_csv_import
 #. odoo-python
 #: code:addons/account_move_csv_import/wizard/import_move.py:0
-msgid "This is not a Zenergy Payroll file."
+msgid "This is not a Zenegy Payroll file."
 msgstr ""
 
 #. module: account_move_csv_import
@@ -563,6 +607,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_move_csv_import/wizard/import_move.py:0
 msgid "You must select a file format."
+msgstr ""
+
+#. module: account_move_csv_import
+#: model:ir.actions.act_window,name:account_move_csv_import.zenegy_analytic_map_act_window
+#: model:ir.model,name:account_move_csv_import.model_zenegy_analytic_map
+#: model:ir.ui.menu,name:account_move_csv_import.zenegy_analytic_map_menu
+msgid "Zenegy Analytic Map"
 msgstr ""
 
 #. module: account_move_csv_import
