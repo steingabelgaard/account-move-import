@@ -12,6 +12,7 @@ from tempfile import TemporaryFile
 import base64
 import zipfile
 import logging
+import babel
 
 logger = logging.getLogger(__name__)
 try:
@@ -168,7 +169,7 @@ class AccountMoveImport(models.TransientModel):
         with zipfile.ZipFile(fileobj) as myzip:
             for filename in myzip.namelist():
                 with myzip.open(filename) as myfile:
-                    self.env["ir.attachment"].create(
+                    att = self.env["ir.attachment"].create(
                         {
                             "res_model": "account.move",
                             "res_id": moves.id,
@@ -176,6 +177,8 @@ class AccountMoveImport(models.TransientModel):
                             "datas": base64.b64encode(myfile.read()),
                         }
                     )
+                    if filename.endswith('bogforing_total.pdf'):
+                        att.register_as_main_attachment(force=False)
 
     def update_pivot(self, pivot):
         force_move_date = self.force_move_date
@@ -190,7 +193,7 @@ class AccountMoveImport(models.TransientModel):
             if force_move_ref:
                 l['ref'] = force_move_ref
             if force_journal_code:
-                l['journal'] = force_journal_code
+                l['journal'] = {'recordset': force_journal_code}
             if isinstance(l.get('date'), datetime):
                 l['date'] = fields.Date.to_string(l['date'])
             if not l['credit']:
@@ -393,7 +396,7 @@ class AccountMoveImport(models.TransientModel):
         elif line1.startswith('Lønkørsels-ID;Periode fra;Periode til;Dispositionsdato;Afdelingsnavn;Konto;Tekst;Debet;Kredit'):
             fileobj.seek(0)
         elif not line1.startswith('sep=;'):
-            raise UserError(_("This is not a Zenergy Payroll file."))
+            raise UserError(_("This is not a Zenegy Payroll file."))
         reader = unicodecsv.DictReader(
             fileobj,
             delimiter=';',
@@ -426,10 +429,22 @@ class AccountMoveImport(models.TransientModel):
                     'line': i,
                     'ref': 'Løn #%s: %s %s - %s' % (l[loen_id_key], l['Afdelingsnavn'], l['Periode fra'], l['Periode til'])
                 }
-                if l['Afdelingsnavn']:
-                    analytic = aa.search([('name', '=', l['Afdelingsnavn'])])
-                    if analytic:
-                        vals['analytic_account_id'] = analytic.id
+                if l['Afdelingsnr.'] and l['Afdelingsnr.'].isdigit() and l['Afdelingsnavn']:
+                    zenegy_map = self.env['zenegy.analytic.map'].search([('code', '=', int(l['Afdelingsnr.']))], limit=1)
+                    if zenegy_map:
+                        vals['zenegy_analytic_map'] = zenegy_map
+                        vals['analytic_account_id'] = zenegy_map.analytic_account_id.id
+                        # if zenegy_map.analytic_tag_ids:  TODO v19
+                        #    vals['analytic_tag_ids'] = [(6, 0, zenegy_map.analytic_tag_ids.ids)]
+                    else:
+                        analytic = aa.search([('name', '=', l['Afdelingsnavn'])])
+                        if analytic:
+                            vals['analytic_account_id'] = analytic.id
+                        self.env['zenegy.analytic.map'].create({
+                            'code': int(l['Afdelingsnr.']),
+                            'name': l['Afdelingsnavn'],
+                            'analytic_account_id': analytic.id if analytic else False,
+                        })
                 logger.info('VALS: %s', vals)
                 res.append(vals)
                 if credit2:
@@ -595,6 +610,7 @@ class AccountMoveImport(models.TransientModel):
             res.append(vals)
         return res
 
+
     def _prepare_partner_speeddict(self, company_id):
         speeddict = {}
         partner_sr = self.env['res.partner'].with_context(active_test=False).search_read(
@@ -632,6 +648,46 @@ class AccountMoveImport(models.TransientModel):
         for l in journal_sr:
             speeddict['journal'][l['code'].upper()] = l['id']
         return speeddict
+
+    def _add_reposting_move(self, cur_move, cur_zenegy_analytic_map, cur_date):
+        repost_debit = 0
+        repost_credit = 0
+        repost_amount = 0
+        for line in cur_move['line_ids']:
+            if line[2]['account_id'] in cur_zenegy_analytic_map.repost_crit_acount_ids.ids:
+                repost_amount += line[2]['debit']
+                repost_amount -= line[2]['credit']
+        if repost_amount:
+            if repost_amount > 0:
+                repost_debit = repost_amount
+            else:
+                repost_credit = -repost_amount
+            repost_vals = [
+                {
+                    'account_id': cur_zenegy_analytic_map.repost_to_account_id.id,
+                    'debit': repost_debit,
+                    'credit': repost_credit,
+                    'name': cur_zenegy_analytic_map.repost_text.format(
+                        department=cur_zenegy_analytic_map.name,
+                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
+                    ),
+                    'date': cur_date,
+                    # 'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False, TODO v19
+                },
+                {
+                    'account_id': cur_zenegy_analytic_map.repost_from_account_id.id,
+                    'debit': repost_credit,
+                    'credit': repost_debit,
+                    'name': cur_zenegy_analytic_map.repost_text.format(
+                        department=cur_zenegy_analytic_map.name,
+                        periode=babel.dates.format_date(cur_date, format='MMMM yyyy', locale=self.env.user.lang),
+                    ),
+                    'date': cur_date,
+                    # 'analytic_tag_ids': [(6, 0, cur_zenegy_analytic_map.analytic_tag_ids.ids)] if cur_zenegy_analytic_map.analytic_tag_ids else False, TODO v19
+                }
+            ]
+            cur_move['line_ids'].append((0, 0, repost_vals[0]))
+            cur_move['line_ids'].append((0, 0, repost_vals[1]))
 
     def create_moves_from_pivot(self, pivot, post=False):
         logger.info('Final pivot: %s', pivot)
@@ -761,6 +817,7 @@ class AccountMoveImport(models.TransientModel):
         cur_balance = 0.0
         prec = self.env.user.company_id.currency_id.rounding
         cur_move = {}
+        cur_zenegy_analytic_map = False
         for l in pivot:
             ref = l.get('ref', False)
             if (
@@ -783,14 +840,20 @@ class AccountMoveImport(models.TransientModel):
                 if cur_move:
                     if not len(cur_move['line_ids']) > 1:
                         raise UserError(_('move should have more than 1 line (%s) %d') % (cur_ref, len(cur_move['line_ids'])))
+                    if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
+                        self._add_reposting_move(cur_move, cur_zenegy_analytic_map, cur_date)
                     moves.append(cur_move)
                 cur_move = self._prepare_move(l)
                 cur_move['line_ids'] = [(0, 0, self._prepare_move_line(l))]
                 cur_date = l['date']
+                logger.info('REF: %s, JOURNAL: %s, DATE: %s - %s', ref, l['journal_id'], cur_date, type(cur_date))
                 cur_ref = ref
+                cur_zenegy_analytic_map = l.get('zenegy_analytic_map', False)
                 cur_journal_id = l['journal_id']
             cur_balance += l['credit'] - l['debit']
         if cur_move:
+            if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
+                self._add_reposting_move(cur_move, cur_zenegy_analytic_map, cur_date)
             moves.append(cur_move)
         if not float_is_zero(cur_balance, precision_rounding=prec):
             raise UserError(_(
@@ -798,6 +861,9 @@ class AccountMoveImport(models.TransientModel):
                 "balanced (balance is %s).") % cur_balance)
         rmoves = self.env['account.move']
         for move in moves:
+            logger.info('Creating move: %s', move['ref'])
+            for line in move['line_ids']:
+                logger.info('    with line: %s (%s, %s)', line[2]['name'], line[2]['debit'], line[2]['credit'])
             rmoves += amo.create(move)
         logger.info(
             'Account moves IDs %s created via file import' % rmoves.ids)
@@ -825,6 +891,8 @@ class AccountMoveImport(models.TransientModel):
             'analytic_distribution': pivot_line.get('analytic_distribution'),
             'import_reconcile': pivot_line.get('reconcile_ref'),
             }
+        # if pivot_line.get('analytic_tag_ids'):  TODO v19
+        #     vals['analytic_tag_ids'] = pivot_line.get('analytic_tag_ids')
         return vals
 
     def reconcile_move_lines(self, moves):
