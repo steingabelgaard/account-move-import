@@ -20,7 +20,7 @@ class ZenegyAnalyticMap(models.Model):
         'account.account', string='Repost sum from accounts',
         default=lambda self: self.env['account.account'].search([('code', 'in', ['73350', '73360', '73365', '73370', '73375', '73380'])])
     )
-    repost_from_account_id = fields.Many2one('account.account', string='Repost from account', default=_default_repost_from_account_id)
+    repost_from_account_id = fields.Many2one('account.account', string='Repost from account', default=lambda self: self._default_repost_from_account_id())
     repost_to_account_id = fields.Many2one('account.account', string='Repost to account')
     repost_text = fields.Char(
         'Repost text', default='omp - {department}  til viderefakturering {periode}',
