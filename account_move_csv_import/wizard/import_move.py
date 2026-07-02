@@ -192,8 +192,8 @@ class AccountMoveImport(models.TransientModel):
                 l['name'] = force_move_line_name
             if force_move_ref:
                 l['ref'] = force_move_ref
-            if force_journal:
-                l['journal'] = {'recordset': force_journal}
+            if force_journal_code:
+                l['journal'] = {'recordset': force_journal_code}
             if isinstance(l.get('date'), datetime):
                 l['date'] = fields.Date.to_string(l['date'])
             if not l['credit']:
