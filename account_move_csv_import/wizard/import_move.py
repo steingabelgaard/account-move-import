@@ -771,26 +771,19 @@ class AccountMoveImport(models.TransientModel):
             else:
                 errors['journal'].setdefault(l['journal'], []).append(l['line'])
             if not l.get('name'):
-                errors['other'].append(_(
-                    'Line %d: missing label.') % l['line'])
+                errors['other'].append(_('Line %d: missing label.', l['line']))
             if not l.get('date'):
-                errors['other'].append(_(
-                    'Line %d: missing date.') % l['line'])
+                errors['other'].append(_('Line %d: missing date.', l['line']))
             else:
                 if not isinstance(l.get('date'), datelib):
                     try:
                         l['date'] = datetime.strptime(l['date'], '%Y-%m-%d')
                     except Exception:
-                        errors['other'].append(_(
-                            'Line %d: bad date format %s') % (l['line'], l['date']))
+                        errors['other'].append(_('Line %d: bad date format %s', l['line'], l['date']))
             if not isinstance(l.get('credit'), (float, int)):
-                errors['other'].append(_(
-                    'Line %d: bad value for credit (%s).')
-                    % (l['line'], l['credit']))
+                errors['other'].append(_('Line %d: bad value for credit (%s).', l['line'], l['credit']))
             if not isinstance(l.get('debit'), (float, int)):
-                errors['other'].append(_(
-                    'Line %d: bad value for debit (%s).')
-                    % (l['line'], l['debit']))
+                errors['other'].append(_('Line %d: bad value for debit (%s).', l['line'], l['debit']))
             # test that they don't have both a value
 
         # LIST OF ERRORS
@@ -798,14 +791,13 @@ class AccountMoveImport(models.TransientModel):
         for key, label in key2label.items():
             if errors[key]:
                 errors_key_sorted = sorted(errors[key].items(), key=lambda x: x[0])
-                msg += _("List of %s that don't exist in Odoo:\n%s\n\n") % (
+                msg += _("List of %s that don't exist in Odoo:\n%s\n\n", ()
                     label,
                     '\n'.join([
                         '- %s : line(s) %s' % (code, ', '.join([str(i) for i in lines]))
                         for (code, lines) in errors_key_sorted]))
         if errors['other']:
-            msg += _('List of misc errors:\n%s') % (
-                '\n'.join(['- %s' % e for e in errors['other']]))
+            msg += _('List of misc errors:\n%s', '\n'.join(['- %s' % e for e in errors['other']]))
         if msg:
             raise UserError(msg)
 
@@ -839,7 +831,7 @@ class AccountMoveImport(models.TransientModel):
                         % (l['line'] - 1, l['ref'], cur_balance))
                 if cur_move:
                     if not len(cur_move['line_ids']) > 1:
-                        raise UserError(_('move should have more than 1 line (%s) %d') % (cur_ref, len(cur_move['line_ids'])))
+                        raise UserError(_('move should have more than 1 line (%s) %d', cur_ref, len(cur_move['line_ids'])))
                     if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
                         self._add_reposting_move(cur_move, cur_zenegy_analytic_map, cur_date)
                     moves.append(cur_move)
