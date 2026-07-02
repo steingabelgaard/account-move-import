@@ -8,7 +8,7 @@ score=n
 readme-template-url="https://github.com/OCA/maintainer-tools/blob/master/template/module/README.rst"
 manifest-required-authors=Stein & Gabelgaard ApS
 manifest-required-keys=license
-manifest-deprecated-keys=description,active
+manifest-deprecated-keys=active
 license-allowed=AGPL-3,GPL-2,GPL-2 or any later version,GPL-3,GPL-3 or any later version,LGPL-3
 valid-odoo-versions=19.0
 
@@ -52,13 +52,11 @@ enable=anomalous-backslash-in-string,
     translation-required,
     unreachable,
     use-vim-comment,
-    attribute-string-redundant,
     consider-merging-classes-inherited,
     context-overridden,
     except-pass,
     invalid-commit,
     manifest-maintainers-list,
-    missing-readme,
     missing-return,
     odoo-addons-relative-import,
     renamed-field-parameter,
@@ -82,7 +80,6 @@ enable=anomalous-backslash-in-string,
     no-search-all,
     no-wizard-in-models,
     prohibited-method-override,
-    prefer-env-translation,
     translation-format-interpolation,
     translation-format-truncated,
     translation-fstring-interpolation,
@@ -99,6 +96,8 @@ enable=anomalous-backslash-in-string,
     odoo-addons-relative-import,
     redefined-builtin,
     manifest-external-assets,
+    prefer-env-translation
+
 
 
 [REPORTS]

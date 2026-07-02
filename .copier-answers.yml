@@ -1,5 +1,5 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: 44684c9
+_commit: 1a80e7f
 _src_path: https://github.com/steingabelgaard/sg-addons-repo-template.git
 additional_ruff_rules: []
 ci: GitHub
@@ -13,7 +13,7 @@ github_enable_makepot: true
 github_enable_stale_action: false
 github_enforce_dev_status_compatibility: false
 include_wkhtmltopdf: false
-lint_mode: OCA
+lint_mode: SG
 odoo_test_flavor: Odoo
 odoo_version: 19.0
 org_name: Stein & Gabelgaard ApS
