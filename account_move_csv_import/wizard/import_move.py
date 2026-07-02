@@ -185,21 +185,21 @@ class AccountMoveImport(models.TransientModel):
         force_move_ref = self.force_move_ref
         force_move_line_name = self.force_move_line_name
         force_journal_code = self.force_journal_id and self.force_journal_id.code or False
-        for l in pivot:
+        for line in pivot:
             if force_move_date:
-                l['date'] = force_move_date
+                line['date'] = force_move_date
             if force_move_line_name:
-                l['name'] = force_move_line_name
+                line['name'] = force_move_line_name
             if force_move_ref:
-                l['ref'] = force_move_ref
+                line['ref'] = force_move_ref
             if force_journal_code:
-                l['journal'] = {'recordset': force_journal_code}
-            if isinstance(l.get('date'), datetime):
-                l['date'] = fields.Date.to_string(l['date'])
-            if not l['credit']:
-                l['credit'] = 0.0
-            if not l['debit']:
-                l['debit'] = 0.0
+                line['journal'] = {'recordset': force_journal_code}
+            if isinstance(line.get('date'), datetime):
+                line['date'] = fields.Date.to_string(line['date'])
+            if not line['credit']:
+                line['credit'] = 0.0
+            if not line['debit']:
+                line['debit'] = 0.0
 
     def extenso2pivot(self, fileobj):
         fieldnames = [
@@ -213,16 +213,16 @@ class AccountMoveImport(models.TransientModel):
             encoding='utf-8')
         res = []
         i = 0
-        for l in reader:
+        for line in reader:
             i += 1
-            l['credit'] = l['credit'] or '0'
-            l['debit'] = l['debit'] or '0'
+            line['credit'] = line['credit'] or '0'
+            line['debit'] = line['debit'] or '0'
             vals = {
-                'journal': {'code': l['journal']},
-                'account': {'code': l['account']},
-                'credit': float(l['credit'].replace(',', '.')),
-                'debit': float(l['debit'].replace(',', '.')),
-                'date': datetime.strptime(l['date'], '%d%m%Y'),
+                'journal': {'code': line['journal']},
+                'account': {'code': line['account']},
+                'credit': float(line['credit'].replace(',', '.')),
+                'debit': float(line['debit'].replace(',', '.')),
+                'date': datetime.strptime(line['date'], '%d%m%Y'),
                 'line': i,
             }
             res.append(vals)
@@ -240,18 +240,18 @@ class AccountMoveImport(models.TransientModel):
             encoding='utf-8')
         res = []
         i = 0
-        for l in reader:
+        for line in reader:
             i += 1
             # skip non-move lines
-            if l.get('date') and l.get('name') and l.get('amount'):
-                amount = float(l['amount'].replace(',', '.'))
+            if line.get('date') and line.get('name') and line.get('amount'):
+                amount = float(line['amount'].replace(',', '.'))
                 vals = {
-                    'journal': {'code': l['journal']},
-                    'account': {'code': l['account']},
-                    'credit': l['sign'] == 'C' and amount or 0,
-                    'debit': l['sign'] == 'D' and amount or 0,
-                    'date': datetime.strptime(l['date'], '%d/%m/%Y'),
-                    'name': l['name'],
+                    'journal': {'code': line['journal']},
+                    'account': {'code': line['account']},
+                    'credit': line['sign'] == 'C' and amount or 0,
+                    'debit': line['sign'] == 'D' and amount or 0,
+                    'date': datetime.strptime(line['date'], '%d/%m/%Y'),
+                    'name': line['name'],
                     'line': i,
                 }
                 res.append(vals)
@@ -276,22 +276,22 @@ class AccountMoveImport(models.TransientModel):
             encoding=self.file_encoding)
         res = []
         i = 0
-        for l in reader:
+        for line in reader:
             i += 1
             # Skip header line
             if i == 1:
                 continue
-            l['credit'] = l['credit'] or '0'
-            l['debit'] = l['debit'] or '0'
+            line['credit'] = line['credit'] or '0'
+            line['debit'] = line['debit'] or '0'
             vals = {
-                'journal': {'code': l['journal']},
-                'account': {'code': l['account']},
+                'journal': {'code': line['journal']},
+                'account': {'code': line['account']},
                 #    'partner': {'ref': '1242'},
-                'credit': float(l['credit'].replace(',', '.')),
-                'debit': float(l['debit'].replace(',', '.')),
-                'date': datetime.strptime(l['date'], '%Y%m%d'),
-                'name': l['name'],
-                'reconcile_ref': l['reconcile_ref'],
+                'credit': float(line['credit'].replace(',', '.')),
+                'debit': float(line['debit'].replace(',', '.')),
+                'date': datetime.strptime(line['date'], '%Y%m%d'),
+                'name': line['name'],
+                'reconcile_ref': line['reconcile_ref'],
                 'line': i,
             }
             res.append(vals)
@@ -312,21 +312,21 @@ class AccountMoveImport(models.TransientModel):
             encoding='utf-8')
         res = []
         i = 0
-        for l in reader:
+        for line in reader:
             i += 1
             vals = {
-                'journal': {'code': l['journal']},
-                'account': {'code': l['account']},
-                'credit': float(l['credit'] or 0),
-                'debit': float(l['debit'] or 0),
-                'date': datetime.strptime(l['date'], '%d/%m/%Y'),
-                'name': l['name'],
+                'journal': {'code': line['journal']},
+                'account': {'code': line['account']},
+                'credit': float(line['credit'] or 0),
+                'debit': float(line['debit'] or 0),
+                'date': datetime.strptime(line['date'], '%d/%m/%Y'),
+                'name': line['name'],
                 'line': i,
                 }
-            if l['analytic']:
-                vals['analytic'] = {'code': l['analytic']}
-            if l['partner']:
-                vals['partner'] = {'ref': l['partner']}
+            if line['analytic']:
+                vals['analytic'] = {'code': line['analytic']}
+            if line['partner']:
+                vals['partner'] = {'ref': line['partner']}
             res.append(vals)
         return res
 
@@ -358,11 +358,11 @@ class AccountMoveImport(models.TransientModel):
         res = []
         i = 0
         # logger.info('Processing Reader: %s', reader)
-        for l in reader:
-            # logger.info('LINE: %s', l)
-            if len(l['account']) > 2:
+        for line in reader:
+            # logger.info('LINE: %s', line)
+            if len(line['account']) > 2:
                 i += 1
-                amount = float(l['amount'].replace('.', '').replace(',', '.'))
+                amount = float(line['amount'].replace('.', '').replace(',', '.'))
                 if amount > 0:
                     debit = amount
                     credit = 0
@@ -370,13 +370,13 @@ class AccountMoveImport(models.TransientModel):
                     debit = 0
                     credit = - amount
                 vals = {
-                    'account': {'code': l['account']},
-                    'name': l['name'] + ' - ' + l['period'],
+                    'account': {'code': line['account']},
+                    'name': line['name'] + ' - ' + line['period'],
                     'credit': credit,
                     'debit': debit,
-                    'date': datetime.strptime(l['date'], '%Y-%m-%d'),
+                    'date': datetime.strptime(line['date'], '%Y-%m-%d'),
                     'line': i,
-                    'ref': 'Løn ' + l['period']
+                    'ref': 'Løn ' + line['period']
                 }
                 res.append(vals)
         return res
@@ -403,46 +403,46 @@ class AccountMoveImport(models.TransientModel):
             encoding='iso-8859-1')
         res = []
         i = 0
-        for l in reader:
+        for line in reader:
             i += 1
-            if 'Lønkørsels ID' in l:
+            if 'Lønkørsels ID' in line:
                 loen_id_key = 'Lønkørsels ID'
             else:
                 loen_id_key = 'Lønkørsels-ID'
-            if l[loen_id_key].isdigit():
+            if line[loen_id_key].isdigit():
                 debit = 0
                 credit = 0
                 credit2 = 0
-                if l['Debet']:
-                    debit = float(l['Debet'].replace('.', '').replace(',', '.'))
-                if l['Kredit']:
-                    credit = float(l['Kredit'].replace('.', '').replace(',', '.'))
+                if line['Debet']:
+                    debit = float(line['Debet'].replace('.', '').replace(',', '.'))
+                if line['Kredit']:
+                    credit = float(line['Kredit'].replace('.', '').replace(',', '.'))
                 if credit and debit:
                     credit2 = credit
                     credit = 0
                 vals = {
-                    'account': {'code': l['Konto']},
-                    'name': l['Tekst'],
+                    'account': {'code': line['Konto']},
+                    'name': line['Tekst'],
                     'credit': credit,
                     'debit': debit,
-                    'date': datetime.strptime(l['Dispositionsdato'], '%d-%m-%Y'),
+                    'date': datetime.strptime(line['Dispositionsdato'], '%d-%m-%Y'),
                     'line': i,
-                    'ref': 'Løn #%s: %s %s - %s' % (l[loen_id_key], l['Afdelingsnavn'], l['Periode fra'], l['Periode til'])
+                    'ref': 'Løn #%s: %s %s - %s' % (line[loen_id_key], line['Afdelingsnavn'], line['Periode fra'], line['Periode til'])
                 }
-                if l['Afdelingsnr.'] and l['Afdelingsnr.'].isdigit() and l['Afdelingsnavn']:
-                    zenegy_map = self.env['zenegy.analytic.map'].search([('code', '=', int(l['Afdelingsnr.']))], limit=1)
+                if line['Afdelingsnr.'] and line['Afdelingsnr.'].isdigit() and line['Afdelingsnavn']:
+                    zenegy_map = self.env['zenegy.analytic.map'].search([('code', '=', int(line['Afdelingsnr.']))], limit=1)
                     if zenegy_map:
                         vals['zenegy_analytic_map'] = zenegy_map
                         vals['analytic_account_id'] = zenegy_map.analytic_account_id.id
                         # if zenegy_map.analytic_tag_ids:  TODO v19
                         #    vals['analytic_tag_ids'] = [(6, 0, zenegy_map.analytic_tag_ids.ids)]
                     else:
-                        analytic = aa.search([('name', '=', l['Afdelingsnavn'])])
+                        analytic = aa.search([('name', '=', line['Afdelingsnavn'])])
                         if analytic:
                             vals['analytic_account_id'] = analytic.id
                         self.env['zenegy.analytic.map'].create({
-                            'code': int(l['Afdelingsnr.']),
-                            'name': l['Afdelingsnavn'],
+                            'code': int(line['Afdelingsnr.']),
+                            'name': line['Afdelingsnavn'],
                             'analytic_account_id': analytic.id if analytic else False,
                         })
                 logger.info('VALS: %s', vals)
@@ -471,22 +471,22 @@ class AccountMoveImport(models.TransientModel):
             encoding='latin1')
         res = []
         i = 0
-        for l in reader:
+        for line in reader:
             i += 1
             if i == 1:
                 continue
-            amount = float(l['amount'].replace(',', '.'))
-            credit = l['sign'] == 'C' and amount or False
-            debit = l['sign'] == 'D' and amount or False
-            ana = l.get('analytic') and {'code': l.get('analytic')} or False
+            amount = float(line['amount'].replace(',', '.'))
+            credit = line['sign'] == 'C' and amount or False
+            debit = line['sign'] == 'D' and amount or False
+            ana = line.get('analytic') and {'code': line.get('analytic')} or False
             vals = {
-                'journal': {'code': l['journal']},
-                'account': {'code': l['account']},
+                'journal': {'code': line['journal']},
+                'account': {'code': line['account']},
                 'analytic': ana,
                 'credit': credit,
                 'debit': debit,
-                'date': datetime.strptime(l['date'], '%y%m%d'),
-                'name': l['name'],
+                'date': datetime.strptime(line['date'], '%y%m%d'),
+                'name': line['name'],
                 'line': i,
             }
             res.append(vals)
@@ -496,20 +496,20 @@ class AccountMoveImport(models.TransientModel):
         i = 0
         res = []
         file_str = file_bytes.decode(self.file_encoding)
-        for l in file_str.split('\n'):
+        for line in file_str.split('\n'):
             i += 1
-            if len(l) < 54:
+            if len(line) < 54:
                 continue
-            if l[0] == 'M' and l[41] in ('C', 'D'):
-                amount_cents = int(l[42:55])
+            if line[0] == 'M' and line[41] in ('C', 'D'):
+                amount_cents = int(line[42:55])
                 amount = amount_cents / 100.0
                 vals = {
-                    'journal': {'code': l[9:11]},
-                    'account': {'code': l[1:9]},
-                    'credit': l[41] == 'C' and amount or False,
-                    'debit': l[41] == 'D' and amount or False,
-                    'date': datetime.strptime(l[14:20], '%d%m%y'),
-                    'name': l[21:41],
+                    'journal': {'code': line[9:11]},
+                    'account': {'code': line[1:9]},
+                    'credit': line[41] == 'C' and amount or False,
+                    'debit': line[41] == 'D' and amount or False,
+                    'date': datetime.strptime(line[14:20], '%d%m%y'),
+                    'name': line[21:41],
                     'line': i,
                 }
                 res.append(vals)
@@ -563,18 +563,18 @@ class AccountMoveImport(models.TransientModel):
         res = []
         i = 0
         lines = []
-        for l in reader:
+        for line in reader:
             i += 1
             if i > self.col_map_id.skip_lines:
-                lines.append(l)
+                lines.append(line)
         lines.sort(key=take_voucher)
-        for l in lines:
+        for line in lines:
 
-            text = l[get_col(self.col_map_id.text_fld)]
+            text = line[get_col(self.col_map_id.text_fld)]
             if (not(text and text.strip())):
                 continue
             if self.col_map_id.amount_fld:
-                amount_txt = l[get_col(self.col_map_id.amount_fld)]
+                amount_txt = line[get_col(self.col_map_id.amount_fld)]
                 logger.info('AMOUNT_TXT: [%s]', amount_txt)
                 if (not(amount_txt and amount_txt.strip())):
                     continue
@@ -586,24 +586,24 @@ class AccountMoveImport(models.TransientModel):
                     debit = 0
                     credit = - amount
             else:
-                debit = float(l[get_col(self.col_map_id.debit_fld)].replace('.', '').replace(',', '.'))
-                credit = float(l[get_col(self.col_map_id.credit_fld)].replace('.', '').replace(',', '.'))
+                debit = float(line[get_col(self.col_map_id.debit_fld)].replace('.', '').replace(',', '.'))
+                credit = float(line[get_col(self.col_map_id.credit_fld)].replace('.', '').replace(',', '.'))
 
             # Partner search
             partner = False
-            number = [int(s) for s in l[get_col(self.col_map_id.text_fld)].split() if s.isdigit()]
+            number = [int(s) for s in line[get_col(self.col_map_id.text_fld)].split() if s.isdigit()]
             if number:
                 member_number = '%s%s' % (org_code, number[0])
                 partner = self.env['res.partner'].with_context(active_test=False).search([('member_number', '=', member_number)])
 
             vals = {
-                'account': {'code': l[get_col(self.col_map_id.account_fld)]},
-                'name': l[get_col(self.col_map_id.text_fld)],
+                'account': {'code': line[get_col(self.col_map_id.account_fld)]},
+                'name': line[get_col(self.col_map_id.text_fld)],
                 'credit': credit,
                 'debit': debit,
-                'date': datetime.strptime(l[get_col(self.col_map_id.date_fld)].replace('PR', '01'), self.col_map_id.date_format),
+                'date': datetime.strptime(line[get_col(self.col_map_id.date_fld)].replace('PR', '01'), self.col_map_id.date_format),
                 'line': i,
-                'ref': l[get_col(self.col_map_id.voucher_fld)]
+                'ref': line[get_col(self.col_map_id.voucher_fld)]
             }
             if partner:
                 vals['partner_id'] = partner.commercial_partner_id.id
@@ -622,8 +622,8 @@ class AccountMoveImport(models.TransientModel):
                 ('parent_id', '=', False),
             ],
             ['ref'])
-        for l in partner_sr:
-            speeddict[l['ref'].upper()] = l['id']
+        for line in partner_sr:
+            speeddict[line['ref'].upper()] = line['id']
         return speeddict
 
     def _prepare_speeddict(self, company_id):
@@ -636,17 +636,17 @@ class AccountMoveImport(models.TransientModel):
         acc_sr = self.env['account.account'].with_company(company_id).search_read([
             ('company_ids', 'in', company_id),
             ('deprecated', '=', False)], ['code'])
-        for l in acc_sr:
-            speeddict['account'][l['code'].upper()] = l['id']
+        for line in acc_sr:
+            speeddict['account'][line['code'].upper()] = line['id']
         aacc_sr = self.env['account.analytic.account'].search_read(
             [('company_id', 'in', (company_id, False)), ('code', '!=', False)],
             ['code'])
-        for l in aacc_sr:
-            speeddict['analytic'][l['code'].upper()] = l['id']
+        for line in aacc_sr:
+            speeddict['analytic'][line['code'].upper()] = line['id']
         journal_sr = self.env['account.journal'].search_read([
             ('company_id', '=', company_id)], ['code'])
-        for l in journal_sr:
-            speeddict['journal'][l['code'].upper()] = l['id']
+        for line in journal_sr:
+            speeddict['journal'][line['code'].upper()] = line['id']
         return speeddict
 
     def _add_reposting_move(self, cur_move, cur_zenegy_analytic_map, cur_date):
@@ -689,7 +689,7 @@ class AccountMoveImport(models.TransientModel):
             cur_move['line_ids'].append((0, 0, repost_vals[0]))
             cur_move['line_ids'].append((0, 0, repost_vals[1]))
 
-    def create_moves_from_pivot(self, pivot, post=False):
+    def create_moves_from_pivot(self, pivot, post=False):  # noqa: C901
         logger.info('Final pivot: %s', pivot)
         amo = self.env['account.move']
         speeddict = self._prepare_speeddict(self.env.company.id)
@@ -707,43 +707,43 @@ class AccountMoveImport(models.TransientModel):
         else:
             acc_speed_dict = speeddict['account']
         # MATCH what needs to be matched... + CHECKS
-        for l in pivot:
-            assert l.get('line') and isinstance(l.get('line'), int),\
+        for line in pivot:
+            assert line.get('line') and isinstance(line.get('line'), int),\
                 'missing line number'
-            if l['account']['code'] in acc_speed_dict:
-                l['account_id'] = acc_speed_dict[l['account']['code']]
-            if not l.get('account_id'):
+            if line['account']['code'] in acc_speed_dict:
+                line['account_id'] = acc_speed_dict[line['account']['code']]
+            if not line.get('account_id'):
                 # Match when import = 61100000 and Odoo has 611000
-                acc_code_tmp = l['account']
+                acc_code_tmp = line['account']
                 while acc_code_tmp and acc_code_tmp[-1] == '0':
                     acc_code_tmp = acc_code_tmp[:-1]
                     if acc_code_tmp and acc_code_tmp in acc_speed_dict:
-                        l['account_id'] = acc_speed_dict[acc_code_tmp]
+                        line['account_id'] = acc_speed_dict[acc_code_tmp]
                         break
-            if not l.get('account_id'):
+            if not line.get('account_id'):
                 # Match when import = 611000 and Odoo has 611000XX
                 for code, account_id in acc_speed_dict.items():
-                    if code.startswith(l['account']):
+                    if code.startswith(line['account']):
                         logger.warning(
                             "Approximate match: import account %s has been matched "
-                            "with Odoo account %s" % (l['account'], code))
-                        l['account_id'] = account_id
+                            "with Odoo account %s" % (line['account'], code))
+                        line['account_id'] = account_id
                         break
-            if not l.get('account_id'):
-                errors['account'].setdefault(l['account'], []).append(l['line'])
-            if l.get('partner'):
-                if l['partner'] in speeddict['partner']:
-                    l['partner_id'] = speeddict['partner'][l['partner']]
+            if not line.get('account_id'):
+                errors['account'].setdefault(line['account'], []).append(line['line'])
+            if line.get('partner'):
+                if line['partner'] in speeddict['partner']:
+                    line['partner_id'] = speeddict['partner'][line['partner']]
                 else:
-                    errors['partner'].setdefault(l['partner'], []).append(l['line'])
-            if l.get('partner'):
-                if l['partner'] in speeddict['partner']:
-                    l['partner_id'] = speeddict['partner'][l['partner']]
+                    errors['partner'].setdefault(line['partner'], []).append(line['line'])
+            if line.get('partner'):
+                if line['partner'] in speeddict['partner']:
+                    line['partner_id'] = speeddict['partner'][line['partner']]
                 else:
-                    errors['partner'].setdefault(l['partner'], []).append(l['line'])
-            if l.get('analytic'):
-                l['analytic_distribution'] = {}
-                for ana_entry in l['analytic'].split('|'):
+                    errors['partner'].setdefault(line['partner'], []).append(line['line'])
+            if line.get('analytic'):
+                line['analytic_distribution'] = {}
+                for ana_entry in line['analytic'].split('|'):
                     ana_entry = ana_entry.strip()
                     if ana_entry:
                         ana_entry_split = ana_entry.split(':')
@@ -757,33 +757,33 @@ class AccountMoveImport(models.TransientModel):
                             try:
                                 ana_pct = float(ana_pct_str_ready)
                             except Exception:
-                                errors['other'].append("Line %d: wrong analytic percentage: '%s' is not a number." % (l['line'], ana_pct_str))
+                                errors['other'].append("Line %d: wrong analytic percentage: '%s' is not a number." % (line['line'], ana_pct_str))
                                 ana_pct = 1
                             if ana_pct < 0 or ana_pct > 100:
-                                errors['other'].append("Line %d: wrong analytic percentage: '%s' is not between 0 and 100." % (l['line'], ana_pct_str))
+                                errors['other'].append("Line %d: wrong analytic percentage: '%s' is not between 0 and 100." % (line['line'], ana_pct_str))
                         if ana_account_code in speeddict['analytic']:
-                            l['analytic_distribution'][speeddict['analytic'][ana_account_code]] = ana_pct
+                            line['analytic_distribution'][speeddict['analytic'][ana_account_code]] = ana_pct
                         else:
-                            errors['analytic'].setdefault(ana_account_code, []).append(l['line'])
+                            errors['analytic'].setdefault(ana_account_code, []).append(line['line'])
 
-            if l['journal'] in speeddict['journal']:
-                l['journal_id'] = speeddict['journal'][l['journal']]
+            if line['journal'] in speeddict['journal']:
+                line['journal_id'] = speeddict['journal'][line['journal']]
             else:
-                errors['journal'].setdefault(l['journal'], []).append(l['line'])
-            if not l.get('name'):
-                errors['other'].append(_('Line %d: missing label.', l['line']))
-            if not l.get('date'):
-                errors['other'].append(_('Line %d: missing date.', l['line']))
+                errors['journal'].setdefault(line['journal'], []).append(line['line'])
+            if not line.get('name'):
+                errors['other'].append(_('Line %d: missing label.', line['line']))
+            if not line.get('date'):
+                errors['other'].append(_('Line %d: missing date.', line['line']))
             else:
-                if not isinstance(l.get('date'), datelib):
+                if not isinstance(line.get('date'), datelib):
                     try:
-                        l['date'] = datetime.strptime(l['date'], '%Y-%m-%d')
+                        line['date'] = datetime.strptime(line['date'], '%Y-%m-%d')
                     except Exception:
-                        errors['other'].append(_('Line %d: bad date format %s', l['line'], l['date']))
-            if not isinstance(l.get('credit'), (float, int)):
-                errors['other'].append(_('Line %d: bad value for credit (%s).', l['line'], l['credit']))
-            if not isinstance(l.get('debit'), (float, int)):
-                errors['other'].append(_('Line %d: bad value for debit (%s).', l['line'], l['debit']))
+                        errors['other'].append(_('Line %d: bad date format %s', line['line'], line['date']))
+            if not isinstance(line.get('credit'), (float, int)):
+                errors['other'].append(_('Line %d: bad value for credit (%s).', line['line'], line['credit']))
+            if not isinstance(line.get('debit'), (float, int)):
+                errors['other'].append(_('Line %d: bad value for debit (%s).', line['line'], line['debit']))
             # test that they don't have both a value
 
         # LIST OF ERRORS
@@ -791,11 +791,11 @@ class AccountMoveImport(models.TransientModel):
         for key, label in key2label.items():
             if errors[key]:
                 errors_key_sorted = sorted(errors[key].items(), key=lambda x: x[0])
-                msg += _("List of %s that don't exist in Odoo:\n%s\n\n", ()
-                    label,
-                    '\n'.join([
-                        '- %s : line(s) %s' % (code, ', '.join([str(i) for i in lines]))
-                        for (code, lines) in errors_key_sorted]))
+                msg += _("List of %s that don't exist in Odoo:\n%s\n\n",
+                         label,
+                         '\n'.join([
+                             '- %s : line(s) %s' % (code, ', '.join([str(i) for i in lines]))
+                             for (code, lines) in errors_key_sorted]))
         if errors['other']:
             msg += _('List of misc errors:\n%s', '\n'.join(['- %s' % e for e in errors['other']]))
         if msg:
@@ -810,39 +810,39 @@ class AccountMoveImport(models.TransientModel):
         prec = self.env.user.company_id.currency_id.rounding
         cur_move = {}
         cur_zenegy_analytic_map = False
-        for l in pivot:
-            ref = l.get('ref', False)
+        for line in pivot:
+            ref = line.get('ref', False)
             if (
                     cur_ref == ref and
-                    cur_journal_id == l['journal_id'] and
-                    cur_date == l['date'] and
+                    cur_journal_id == line['journal_id'] and
+                    cur_date == line['date'] and
                     ref
             ):
                 # not float_is_zero(cur_balance, precision_rounding=prec)):
                 # append to current move
-                cur_move['line_ids'].append((0, 0, self._prepare_move_line(l)))
+                cur_move['line_ids'].append((0, 0, self._prepare_move_line(line)))
             else:
                 # new move
                 if moves and not float_is_zero(
                         cur_balance, precision_rounding=prec):
                     raise UserError(_(
                         "The journal entry that ends on line %d (voucher %s)is not "
-                        "balanced (balance is %s).")
-                        % (l['line'] - 1, l['ref'], cur_balance))
+                        "balanced (balance is %s).",
+                        line['line'] - 1, line['ref'], cur_balance))
                 if cur_move:
                     if not len(cur_move['line_ids']) > 1:
                         raise UserError(_('move should have more than 1 line (%s) %d', cur_ref, len(cur_move['line_ids'])))
                     if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
                         self._add_reposting_move(cur_move, cur_zenegy_analytic_map, cur_date)
                     moves.append(cur_move)
-                cur_move = self._prepare_move(l)
-                cur_move['line_ids'] = [(0, 0, self._prepare_move_line(l))]
-                cur_date = l['date']
-                logger.info('REF: %s, JOURNAL: %s, DATE: %s - %s', ref, l['journal_id'], cur_date, type(cur_date))
+                cur_move = self._prepare_move(line)
+                cur_move['line_ids'] = [(0, 0, self._prepare_move_line(line))]
+                cur_date = line['date']
+                logger.info('REF: %s, JOURNAL: %s, DATE: %s - %s', ref, line['journal_id'], cur_date, type(cur_date))
                 cur_ref = ref
-                cur_zenegy_analytic_map = l.get('zenegy_analytic_map', False)
-                cur_journal_id = l['journal_id']
-            cur_balance += l['credit'] - l['debit']
+                cur_zenegy_analytic_map = line.get('zenegy_analytic_map', False)
+                cur_journal_id = line['journal_id']
+            cur_balance += line['credit'] - line['debit']
         if cur_move:
             if cur_zenegy_analytic_map and cur_zenegy_analytic_map.repost_crit_acount_ids and cur_zenegy_analytic_map.repost_to_account_id and cur_zenegy_analytic_map.repost_from_account_id:
                 self._add_reposting_move(cur_move, cur_zenegy_analytic_map, cur_date)
@@ -850,7 +850,7 @@ class AccountMoveImport(models.TransientModel):
         if not float_is_zero(cur_balance, precision_rounding=prec):
             raise UserError(_(
                 "The journal entry that ends on the last line is not "
-                "balanced (balance is %s).") % cur_balance)
+                "balanced (balance is %s).", cur_balance))
         rmoves = self.env['account.move']
         for move in moves:
             logger.info('Creating move: %s', move['ref'])
@@ -858,7 +858,7 @@ class AccountMoveImport(models.TransientModel):
                 logger.info('    with line: %s (%s, %s)', line[2]['name'], line[2]['debit'], line[2]['credit'])
             rmoves += amo.create(move)
         logger.info(
-            'Account moves IDs %s created via file import' % rmoves.ids)
+            'Account moves IDs %s created via file import', rmoves.ids)
         if post:
             rmoves.post()
         return rmoves
