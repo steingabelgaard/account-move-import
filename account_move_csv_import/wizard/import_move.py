@@ -765,10 +765,11 @@ class AccountMoveImport(models.TransientModel):
                         else:
                             errors['analytic'].setdefault(ana_account_code, []).append(line['line'])
 
-            if line['journal'] in speeddict['journal']:
-                line['journal_id'] = speeddict['journal'][line['journal']]
-            else:
-                errors['journal'].setdefault(line['journal'], []).append(line['line'])
+            if not line.get('journal_id'):
+                if line['journal'] in speeddict['journal']:
+                    line['journal_id'] = speeddict['journal'][line['journal']]
+                else:
+                    errors['journal'].setdefault(line['journal'], []).append(line['line'])
             if not line.get('name'):
                 errors['other'].append(_('Line %d: missing label.', line['line']))
             if not line.get('date'):
