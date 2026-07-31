@@ -193,7 +193,7 @@ class AccountMoveImport(models.TransientModel):
             if force_move_ref:
                 line['ref'] = force_move_ref
             if force_journal_id:
-                line['journal'] = {'recordset': force_journal_id}
+                line['journal_id'] = force_journal_id
             if isinstance(line.get('date'), datetime):
                 line['date'] = fields.Date.to_string(line['date'])
             if not line['credit']:
