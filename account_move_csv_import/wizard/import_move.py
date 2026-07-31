@@ -634,8 +634,7 @@ class AccountMoveImport(models.TransientModel):
             "analytic": {},
             }
         acc_sr = self.env['account.account'].with_company(company_id).search_read([
-            ('company_ids', 'in', company_id),
-            ('deprecated', '=', False)], ['code'])
+            ('company_ids', 'in', company_id)], ['code'])
         for line in acc_sr:
             speeddict['account'][line['code'].upper()] = line['id']
         aacc_sr = self.env['account.analytic.account'].search_read(
