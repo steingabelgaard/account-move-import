@@ -184,7 +184,7 @@ class AccountMoveImport(models.TransientModel):
         force_move_date = self.force_move_date
         force_move_ref = self.force_move_ref
         force_move_line_name = self.force_move_line_name
-        force_journal_code = self.force_journal_id and self.force_journal_id.code or False
+        force_journal_id = self.force_journal_id and self.force_journal_id.id or False
         for line in pivot:
             if force_move_date:
                 line['date'] = force_move_date
@@ -192,8 +192,8 @@ class AccountMoveImport(models.TransientModel):
                 line['name'] = force_move_line_name
             if force_move_ref:
                 line['ref'] = force_move_ref
-            if force_journal_code:
-                line['journal'] = {'recordset': force_journal_code}
+            if force_journal_id:
+                line['journal'] = {'recordset': force_journal_id}
             if isinstance(line.get('date'), datetime):
                 line['date'] = fields.Date.to_string(line['date'])
             if not line['credit']:
