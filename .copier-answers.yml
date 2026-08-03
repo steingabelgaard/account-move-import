@@ -1,5 +1,5 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: 2e323fd
+_commit: 14856f2
 _src_path: https://github.com/steingabelgaard/sg-addons-repo-template.git
 additional_ruff_rules: []
 ci: GitHub
